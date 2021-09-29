@@ -1,0 +1,21 @@
+1. javax.servlet.http.HttpServlet 추상 클래스 상속 -> 서블릿 클래스
+	doGet(HttpServletRequest request, HttpServletResponse response) throws servleException, IOException
+	doPost(HttpServletRequest request, HttpServletResponse response) throws servleException, IOException
+
+2. 라우팅 -> Controller
+	사용자의 요청 URL을 처리하는 용도
+	적절한 Model을 가지고 처리하여
+	jsp(View) 파일로 출력을 해주는 역할
+	
+3. 라우팅 경로 
+web.xml
+<web-app>
+	<servlet>
+		<servlet-name>서블릿 명칭</servlet-name>
+		<servlet-class>서블릿 클래스 명(패키지명 포함 클래스명)</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>서블릿 명칭</servlet-name>
+		<url-pattern>URL 패턴</url-pattern>
+	</servlet-mapping>
+</web-app>

@@ -1,0 +1,72 @@
+어떤 행동을 하도록 명령하는 태그
+1. forward -> 다른 페이지로 이동하는 흐름 제어
+		<jsp:forward page="이동할 페이지의 경로" />
+		
+		forward01.jsp -> 출력 데이터가 버퍼에 쌓이다가
+		
+		forward02.jsp -> <jsp:forward page="forward02.jsp" /> 만나면
+								forward01.jsp로 쌓인 버퍼를 지우고
+								출력이 주도권이 -> forward02.jsp로 넘어가고
+								forward02.jsp의 버퍼가 쌓이고 출력이 되고 종료
+		
+		페이지의 URL은 변경 X -> 내용만 forward된 것으로 변경이 된다
+		
+2. include  -> 외부 페이지의 내용을 포함할때(JSP. HTML, 텍스트, 서플릿 페이지)
+		<jsp:include page="포함할 페이지의 경로" />
+			
+		include01.jsp -> include01 출력 데이터가 버퍼에 담기다가
+		
+		include02.jsp -> <jsp:include page="include02.jsp" /> 만나면 기존 출력 버퍼가 삭제되지 않고
+								-> include02로 출력 제어권이 넘어가고 -> include02의 출력 내용이
+								기존 버퍼에 추가
+								-> 출력이 완료 되면
+								-> 출력 제어권을 다시 include01.jsp로 넘겨준다
+		
+		include01.jsp는 나머지 출력 내용을 담아서 버퍼를 비우고 출력, 완료
+		
+		include 디렉티브 태그와 차이점
+		include 액션태그 -> 요청 중에 처리가 된다.
+		 
+		include 디렉티브 -> 번역 중에 처리가 된다.
+
+3. param - <jsp:forward /> <jsp:include />
+
+				<jsp:forward ...>
+					<jsp:param name="속성명" value="속성값..." />
+				</jsp:forward>
+				
+				1) 단일 forward, include 기능 -> 닫히는 태그(단일)
+				2) 매개변수가 필요한 -> 열고 닫는 태그
+				3) request - String getParameter("매개변수 이름");
+				
+				java.net.URLEncoder
+									- encode
+									
+				java.net.URLDecoder
+									- decode
+		
+4. useBean -> 자바빈즈
+	1) 작성한 자바 클래스 로직을 사용할 수 있게 해주는 액션 태그
+	2) getter, setter 메소드를 가지는 클래스(자바빈즈 클래스)에 특화
+	(모델1, 모델2)
+	3) getter, setter 메소드로 정의한 속성 -> property
+	
+	자바빈즈 클래스
+	1) 기본 생성자 -> 반드시 정의
+	
+	com.dto (Data Table Object)
+	MemberBeam 클래스
+		- id, name
+
+	<jsp:useBean id="참조변수" class="패키지명 포함 클래스" scope="page|request|session|application" />
+	page - 기본
+	
+5. setProperty (setter 메소드에 값 지정)
+	<jsp: setProperty name = "자바 빈즈 참조 변수" property="속성명"  value= "값" />
+																		-> setter 메소드 -> 값 지정
+6. getProperty (getter 메소드에 값 지정)
+	<jsp:getProperty name = "자바 빈즈 참조 변수" property="속성명" />
+																	-> getter 메소드 -> 출력
+
+forward, include, param, useBean, setProperty, getProperty
+

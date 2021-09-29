@@ -47,3 +47,20 @@ JSP -> 자바 코드 사용 지양
 		 function -> 무자열 가공의 편의 기능을 제공
 	
 	<%@ taglib url="경로" prefix="태그 식별자"%>
+	
+	JSTL(taglib)는 별도의 라이브러리를 설치
+	<c:set /> 값 지정
+	<c:out /> 값 출력
+	<c:choose>
+		<c:when ...></c:when>
+		<c:otherwise></c:otherwise>
+	</c:choose>
+	<c:if ...></c:if>
+	<c:forEach ...>
+	
+	</c:forEach>
+
+page
+include
+taglib
+

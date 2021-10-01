@@ -1,0 +1,42 @@
+1. 파일 업로드를 위한 양식
+	enctype="multipart/form-data"
+	
+2. 파일 업로드 처리 방법
+	외부 패키지
+	1) MultipartRequest	(oreilly)
+	2) 아파치 API - fuleupload
+			- 기존 방식 -> 책
+			- 현재 방식 -> 강의 요약
+
+3. Commons-FileUpload를 이용한 파일 업로드
+
+	ServletFileUpload(.. DiskFileItemFactory 인스턴스)
+	
+	org.apache.commons.fileupload.servlet.*
+	ServletFileUpload
+	
+	org.apache.commons.fileupload.disk.*
+	DiskFileItemFactory
+	
+	org.apache.commons.fileupload.*
+	FileItem - P231
+		- isFormField() -> 요청 데이터가 파일이 아니라 일반 데이터인지 여부
+			true -> 일반 데이터(문자)를 처리
+			false -> 파일 형태로 처리
+		- get FieldName() -> 요청 파라미터의 이름
+		
+		--- 일반 데이터 ---
+		- getString() - 요청 파라미터의 값을 가져올때(기본 인코딩 - 일반 데이터)
+		- getString(String encoding) - 요청 파라미터의 값을 가져올때(특정 문자인코딩 - 일반 데이터)
+		
+		--- File ---
+		- getName() -> 업로드된 파일의 경로 포함 파일이름을 가져올 때
+		- getSize() -> 파일 사이즈(바이트)
+		- get() -> 바이트 배열로
+		- delete() -> 업로드된 파일 삭제(서버에 완전히 올라간 파일 삭제 X)
+		- write(File file) - 업로드된 임시 파일 -> 실제 업로드할 경로에 저장
+		- getContentType() -> 올라간 파일 형식(image/png, image/jpg ... - MIME)
+		
+		Os - windows - \
+		LINUX - /
+		MacOs

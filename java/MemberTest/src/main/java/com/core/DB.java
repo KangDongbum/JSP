@@ -14,7 +14,7 @@ public class DB {
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		String url ="jdbc:mysql://localhost:3306/madang";
 		String user ="root";
-		String password = "aA!12345";
+		String password = "123456";
 		 conn=DriverManager.getConnection(url, user, password);
 		 
 		 return conn;

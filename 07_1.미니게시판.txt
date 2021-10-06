@@ -9,3 +9,27 @@
 
 CK Editor 4 CDN
 <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+
+URL - /MiniBoard/board/view?idx=1 
+(쿼리스트링 idx=1 포함한 경로)
+
+URI - /MiniBoard/board/view
+
+sql LIMIT 
+
+jQuery 
+$.ajax({
+	url : "요청 URL", 
+	type : "요청 메서드 (GET, POST)",
+	data : 요청 URL로 전송할 데이터(json, 쿼리스트링(k=1&t=2)),
+	dataType : "반환될 데이터 타입 html|text|json",
+	success : function (res) { // 요청이 성공했을때 반환 출력값
+		$("#blog_content").append(res);
+	},
+	error : function (err) { // 요청이 실패 했을때 반환되는 에러 객체
+	
+	}
+});
+
+
+axios 

@@ -45,6 +45,17 @@
 	</servlet-mapping>
 	<!-- 게시글 삭제 E -->
 	
+	<!-- 파일 업로드 S -->
+	<servlet>
+		<servlet-name>File_Upload</servlet-name>
+		<servlet-class>com.controller.FileUploadController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>File_Upload</servlet-name>
+		<url-pattern>/popup/upload</url-pattern>
+	</servlet-mapping>
+	<!-- 파일 업로드 E -->
+	
 	<!-- 서블릿 E -->
 	<!-- 필터 S -->
 	<!-- 사이트 메인 필터 S -->
@@ -57,7 +68,7 @@
 		</init-param>
 		<init-param>
 			<param-name>DBurl</param-name>
-			<param-value>jdbc:mysql://localhost:3306/miniboard</param-value>
+			<param-value>jdbc:mysql://localhost:3306/miniBoard</param-value>
 		</init-param>
 		<init-param>
 			<param-name>DBuser</param-name>
@@ -65,7 +76,7 @@
 		</init-param>
 		<init-param>
 			<param-name>DBpass</param-name>
-			<param-value>aA!12345</param-value>
+			<param-value>123456</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>

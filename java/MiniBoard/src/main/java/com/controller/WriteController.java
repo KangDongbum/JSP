@@ -26,6 +26,9 @@ public class WriteController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException{
 		res.setContentType("text/html; charset=utf-8");
+		
+		req.setAttribute("action","write");
+		
 		RequestDispatcher rd = req.getRequestDispatcher("/board/form.jsp");
 		rd.include(req, res);
 	}

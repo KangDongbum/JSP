@@ -1,0 +1,68 @@
+블로그 
+1. URL - 서블릿으로 만드시고 -> web.xml
+	1) 작성
+		/blog/post
+		
+	2) 목록(블로그 게시글 + 목록)
+		/blog/list
+		
+	3) 수정
+		/blog/edit?게시글번호(name)=번호
+		/blog/post/* -> 번호
+		
+	4) 삭제
+		/blog/delete?게시글번호(name)=번호
+		/blog/delete/* <- * -> 게시글 번호
+		
+2. UI
+
+3. 공통 필터 설정
+
+4. 공통 헤더, 푸터
+	
+	public void doFilter(...){
+			
+		헤더 출력 메소드(매개변수)
+			
+		chain.doFilter(req,res);
+		
+		푸터 출력 메소드(매개변수)
+	}
+	
+	<jsp:forward page='...' />
+	<jsp:include page='...' />
+	
+	적절한 폴더 생성 -> 헤더.jsp, 푸터.jsp
+	
+5. 정적 자원 -> 헤더, 푸터, text/html -> 다른 타입의 자료는 동작 X
+
+	헤더출려가능여부 체크 메소드 -> 다운 캐스팅(ServletRequest -> HttpServletRequest)
+	- URI (쿼리스트링 값을 제외한 주소)
+	
+	헤더 출력의 기준 - > 정적 디렉토리의 URI가 아닌 경우만 출력
+	
+	1. 멤버 변수 선언
+		private String[] 정적 디렉토리 = { "디렉토리명1", "디렉토리명2" };
+	
+	2. boolean 헤더 출력 결정하는 메소드(ServletRequest request)
+		- HttpServletRequest getRequestURI
+		
+		if(request instanceof HttpServletRequest){
+			HttpServletRequest req = (HttpServletRequest)request;
+			1. 메소드(GET이 아닐때) false -> 헤더 출력 X
+				getMethod() -> GET X false
+				
+			2.
+			String requestURI = req.getRequestURI();
+			
+			정적 디렉토리가 URI에 포함이 되어 있는지 여부 체크
+			포함되어 있으면 -> false
+		}
+		
+		정적디렉토리 -> css,js,images...
+		
+SQL 파일로 데이터 백업
+mysqldump -u 사용자계정(root) -p 저장할 데이터베이스명 > 파일명.sql
+
+DB로 import
+mysql -u사용자계정 -p 저장할 데이터베이스명 < 파일명.sql 

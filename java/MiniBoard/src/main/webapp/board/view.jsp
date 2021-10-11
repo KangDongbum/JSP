@@ -20,3 +20,4 @@
 <a href="delete?idx=${board.idx}" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
 <a href='list'>게시글 목록</a>
 <a href='write'>게시글 작성</a>
+<a href='edit?idx=${board.idx}'>게시글 수정</a>

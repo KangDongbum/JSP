@@ -54,6 +54,39 @@ public class BoardDAO {
 	}
 	
 	/**
+	 * 게시글 수정
+	 * 
+	 * @param req
+	 * @return
+	 */
+	public boolean edit(HttpServletRequest req) {
+		
+		if(req == null) {
+			return false;
+		}
+	
+		String sql = "UPDATE board SET poster = ?, subject = ?, content=? WHERE idx=?";
+		try(Connection conn = DB.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql)){
+			req.setCharacterEncoding("UTF-8");
+			int idx = Integer.parseInt(req.getParameter("idx").trim());
+			pstmt.setString(1, req.getParameter("poster"));
+			pstmt.setString(2, req.getParameter("subject"));
+			pstmt.setString(3, req.getParameter("content"));
+			pstmt.setInt(4,idx);
+			
+			int rs = pstmt.executeUpdate(); // rs 1이상 -> 반영 성공
+			if(rs>0) {
+				return true;
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * 게시글 조회
 	 * 
 	 * @param idx
@@ -77,17 +110,36 @@ public class BoardDAO {
 		return board;
 	}
 	
+	public ArrayList<Board> getList(){
+		return getList(1,5);
+	}
+	
 	/**
 	 * 게시글 목록
 	 * 
-	 * @return 
+	 * @return
+	 * getList(1,5);
+	 * getList(2,5);
+	 * getList(3,5);
+	 * LIMIT 시작할 위치, 추출할 갯수
+	 * 0, 1, 2, 3, 4 - 1페이지
+	 * 5, 6, 7, 8, 9 - 2페이지 
+	 * ...
 	 */
-	public ArrayList<Board> getList() {
+	public ArrayList<Board> getList(int page, int limit) {
 		ArrayList<Board> list = new ArrayList<>();
 		
-		String sql = "SELECT * FROM board ORDER BY idx DESC";
+		page = (page == 0)?1:page;
+		limit = (limit == 0)?5:limit;
+		
+		int offset = (page -1) * limit; // 시작 지점
+		
+		String sql = "SELECT * FROM board ORDER BY idx DESC LIMIT ?, ?";
 		try(Connection conn = DB.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql)){
+			pstmt.setInt(1,offset);
+			pstmt.setInt(2, limit);
+			
 			ResultSet rs = pstmt.executeQuery();
 			
 			while(rs.next()) { //다음 투플이 있으면 true -> 다음으로 이동

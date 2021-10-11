@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<web-app>
+<!-- 서블릿 S -->
+	<servlet>
+		<servlet-name>Blog_post</servlet-name>
+		<servlet-class>com.controller.PostController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Blog_post</servlet-name>
+		<url-pattern>/blog/post</url-pattern>
+	</servlet-mapping>	
+
+	<servlet>
+		<servlet-name>Blog_list</servlet-name>
+		<servlet-class>com.controller.ListController</servlet-class>	
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Blog_list</servlet-name>
+		<url-pattern>/blog/list</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Blog_edit</servlet-name>
+		<servlet-class>com.controller.EditController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Blog_edit</servlet-name>
+		<url-pattern>/blog/edit/*</url-pattern>
+	</servlet-mapping>	
+	
+	<servlet>
+		<servlet-name>Blog_delete</servlet-name>
+		<servlet-class>com.controller.DeleteController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Blog_delete</servlet-name>
+		<url-pattern>/blog/delete/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>Blog_main</servlet-name>
+		<servlet-class>com.controller.MainController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Blog_main</servlet-name>
+		<url-pattern>/blog/main</url-pattern>
+	</servlet-mapping>
+	
+<!-- 서블릿 E -->
+	
+	<filter>
+		<filter-name>Site_filter</filter-name>
+		<filter-class>com.filter.SiteFilter</filter-class>
+		<init-param>
+			<param-name>DBDriver</param-name>
+			<param-value>com.mysql.cj.jdbc.Driver</param-value>
+		</init-param>
+		<init-param>
+			<param-name>DBurl</param-name>
+			<param-value>jdbc:mysql://localhost:3306/blog</param-value>
+		</init-param>
+		<init-param>
+			<param-name>DBuser</param-name>
+			<param-value>root</param-value>
+		</init-param>
+		<init-param>
+			<param-name>DBpass</param-name>
+			<param-value>123456</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>Site_filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+</web-app> 

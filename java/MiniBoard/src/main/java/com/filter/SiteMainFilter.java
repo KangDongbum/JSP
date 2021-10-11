@@ -84,7 +84,7 @@ public class SiteMainFilter implements Filter{
 	 */
 	public boolean isOutlineRequired(ServletRequest req) {
 		/**
-		 * 1. GET 방식이 아닌 경우 false (HttpSErvletRequest - getMethod())
+		 * 1. GET 방식이 아닌 경우 false (HttpServletRequest - getMethod())
 		 * 2. 정적 경로에 해당하는 URI 인 경우 false (HttpServletRequest - getRequestURI())
 		 */
 		if(req instanceof HttpServletRequest) {

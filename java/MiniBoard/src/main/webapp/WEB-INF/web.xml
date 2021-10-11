@@ -56,6 +56,17 @@
 	</servlet-mapping>
 	<!-- 파일 업로드 E -->
 	
+	<!-- 게시판 수정 S -->
+		<servlet>
+			<servlet-name>Board_Edit</servlet-name>
+			<servlet-class>com.controller.EditController</servlet-class>
+		</servlet>
+		<servlet-mapping>
+			<servlet-name>Board_Edit</servlet-name>
+			<url-pattern>/board/edit</url-pattern>		
+		</servlet-mapping>
+	<!-- 게시판 수정 E -->
+	
 	<!-- 서블릿 E -->
 	<!-- 필터 S -->
 	<!-- 사이트 메인 필터 S -->

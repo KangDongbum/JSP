@@ -11,7 +11,7 @@
 <c:forEach var="board" items="${list}">
 	<li>
 		<a href="view?idx=${board.idx}">
-			${board.subject} / ${board.poster} / ${board.regDt}
+			${board.subject} / ${board.poster} / ${board.regDt} /${board.content}
 		</a>
 	</li>
 </c:forEach>

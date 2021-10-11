@@ -1,0 +1,10 @@
+1. URL
+	회원 가입 - /member/join - GET - 회원가입 양식
+										- POST - 회원가입 처리
+										
+	로그인 - /member/login - GET - 로그인 양식
+									  - POST - 로그인 처리
+
+2. 공통 필터
+	- 헤더, 푸터(contentType ="text/html")
+	- 유의점 - 정적자원은 제외

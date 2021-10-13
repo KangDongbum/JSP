@@ -27,4 +27,5 @@
 		</li>
 	</c:forEach>
 </ul>
-<a href='post'>글 쓰기</a>
+<a href='post'>
+<input type='button' value='글 쓰기'></a>

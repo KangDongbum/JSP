@@ -33,11 +33,10 @@ public class PostController extends HttpServlet {
 		PrintWriter out = res.getWriter();
 		Blog_dao dao = new Blog_dao();
 		int postNm = dao.write(req);
-		if(postNm > 0) { // 게시글 등록 성공 -> 게시글 보기 페이지로 이동
+		if(postNm > 0) {
 			out.print("<script>parent.location.href='list';</script>");
-		} else { // 게시글 등록 실패
+		} else {
 			out.print("<script>alert('게시글 등록 실패!');</script>");
 		}
-		
 	}
 }

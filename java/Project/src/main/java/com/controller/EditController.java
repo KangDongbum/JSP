@@ -24,10 +24,10 @@ public class EditController extends HttpServlet{
 			return;
 		}
 		
-		int postNm = Integer.parseInt(req.getParameter("postNm")); // 게시글 번호
+		int postNm = Integer.parseInt(req.getParameter("postNm"));
 		Blog_dao dao = new Blog_dao();
 		Blog blog = dao.get(postNm);
-		if(blog == null) { // 없는 게시글 일때
+		if(blog == null) {
 			out.print("<scrip>alert('없는 게시글 입니다.');history.back();</script>");
 			return;
 		}
@@ -48,9 +48,9 @@ public class EditController extends HttpServlet{
 		Blog_dao dao = new Blog_dao();
 		boolean result = dao.edit(req);
 		
-		if(result) { // 수정 성공
+		if(result) {
 			out.print("<script>parent.location.href='list';</script>");
-		} else { // 수정 실패
+		} else {
 			out.print("<script>alert('수정실패!!');</script>");
 		}		
 	}

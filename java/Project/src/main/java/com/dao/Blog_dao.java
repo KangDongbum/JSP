@@ -46,7 +46,7 @@ public class Blog_dao {
 		int page = 0;
 		
 		page = (page == 0)?1:page;
-		int offset = (page -1) * limit; // 시작 지점
+		int offset = (page -1) * limit;
 		
 		String sql = "SELECT * FROM posting ORDER BY postNm DESC LIMIT ?, ?";
 		try(Connection conn = DB.getConnection();
@@ -56,7 +56,7 @@ public class Blog_dao {
 			
 			ResultSet rs = pstmt.executeQuery();
 			
-			while(rs.next()) { //다음 투플이 있으면 true -> 다음으로 이동
+			while(rs.next()) {
 				list.add(new Blog(rs));
 			}
 			rs.close();
@@ -119,7 +119,7 @@ public boolean edit(HttpServletRequest req) {
 			pstmt.setString(3, req.getParameter("content"));
 			pstmt.setInt(4,postNm);
 			
-			int rs = pstmt.executeUpdate(); // rs 1이상 -> 반영 성공
+			int rs = pstmt.executeUpdate();
 			if(rs>0) {
 				return true;
 			}

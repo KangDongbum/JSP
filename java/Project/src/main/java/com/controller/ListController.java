@@ -27,5 +27,4 @@ public class ListController extends HttpServlet{
 		RequestDispatcher rd = req.getRequestDispatcher("/board/list.jsp");
 		rd.include(req, res);
 	}
-
 }

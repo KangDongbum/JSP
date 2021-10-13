@@ -46,6 +46,14 @@
 		<url-pattern>/blog/main</url-pattern>
 	</servlet-mapping>
 	
+	<servlet>
+		<servlet-name>File_Upload</servlet-name>
+		<servlet-class>com.controller.FileUploadController</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>File_Upload</servlet-name>
+		<url-pattern>/popup/upload</url-pattern>
+	</servlet-mapping>	
 <!-- 서블릿 E -->
 	
 	<filter>
@@ -67,6 +75,7 @@
 			<param-name>DBpass</param-name>
 			<param-value>123456</param-value>
 		</init-param>
+		
 	</filter>
 	<filter-mapping>
 		<filter-name>Site_filter</filter-name>

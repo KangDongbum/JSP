@@ -37,8 +37,13 @@ public class SiteFilter implements Filter{
 		try {
 			if(output(req)) {
 				res.setContentType("text/html; charset=utf-8");
-				RequestDispatcher header = req.getRequestDispatcher("/outline/header.jsp");
-				header.include(req,res);
+				if(popup(req)== true) {
+					RequestDispatcher header = req.getRequestDispatcher("/outline/popup_header.jsp");
+					header.include(req,res);
+				} else {
+					RequestDispatcher header = req.getRequestDispatcher("/outline/header.jsp");
+					header.include(req,res);
+				}
 			}
 		} catch (ServletException | IOException e) {
 			e.printStackTrace();
@@ -49,8 +54,13 @@ public class SiteFilter implements Filter{
 		try {
 			if(output(req)) {
 				res.setContentType("text/html; charset=utf-8");
-				RequestDispatcher footer = req.getRequestDispatcher("/outline/footer.jsp");
-				footer.include(req,res);
+				if(popup(req)== true) {
+					RequestDispatcher footer = req.getRequestDispatcher("/outline/popup_footer.jsp");
+					footer.include(req,res);
+				} else {
+					RequestDispatcher footer = req.getRequestDispatcher("/outline/footer.jsp");
+					footer.include(req,res);
+				}
 			}
 	 	} catch(ServletException | IOException e) {
 	 		e.printStackTrace();
@@ -75,5 +85,16 @@ public class SiteFilter implements Filter{
 				}
 			}
 		return true;
+	}
+	
+	public boolean popup(ServletRequest req) {
+		if(req instanceof HttpServletRequest) {
+			HttpServletRequest req2 = (HttpServletRequest)req;
+			String URI = req2.getRequestURI();
+			if(URI.indexOf("/popup") != -1) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

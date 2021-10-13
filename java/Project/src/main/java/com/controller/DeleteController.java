@@ -24,9 +24,9 @@ public class DeleteController extends HttpServlet{
 		Blog_dao dao = new Blog_dao();
 		int postNm = Integer.parseInt(req.getParameter("postNm"));
 		boolean result = dao.delete(postNm);
-		if(result) { // 삭제 성공 -> 목록으로 이동
+		if(result) {
 			res.sendRedirect("list");
-		} else { // 삭제 실패 -> 메세지 -> 뒤로가기
+		} else { 
 			out.print("<script>alert('삭제 실패!');history.back();</script>");
 		}
 	}

@@ -12,6 +12,7 @@
 	<c:if test='${blog != null }'>
 		<input type='hidden' name='postNm' value="<c:out value='${blog.postNm}'/>"/>
 	</c:if>
+	<div id="box">
 	<dl>
 		<dt>제목</dt>
 		<dd>
@@ -21,7 +22,7 @@
 	<dl>
 		<dt>작성자</dt>
 		<dd>
-			<input type="text" name="postWriter" value="<c:out value='${blog.postWriter}'/>">
+			<input type="text" name="postWriter" value="<c:out value='${blog.postWriter}'/>" >
 		</dd>
 	</dl>
 	<dl>
@@ -29,6 +30,7 @@
 		<dd>
 			<textarea id='content' name="content">	<c:out value='${blog.content}'/>
 			</textarea>
+			<span class='addImage'>[이미지 추가]</span>
 		</dd>
 	</dl>
 	<c:choose>
@@ -39,4 +41,5 @@
 			<input type="submit" value="수정하기">	
 		</c:otherwise>
 	</c:choose>
+	</div>
 </form>

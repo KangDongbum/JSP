@@ -1,0 +1,29 @@
+1. 네이버 개발자센터 - 앱 등록
+
+	Client ID - 4Tfb30rLISPHKYoX4MwV
+	Client Secret - Pb8yQGXo_O
+
+	Callback URL - http://localhost:8080/LoginSns/naverlogin
+
+2. 네이버 로그인 요청 절차
+	1) 인증 코드 발급
+	GET - https://nid.naver.com/oauth2.0/authorize
+		  - 제공된 전송 파라미터에 값을 추가하여 접근하면 
+		  - Callback URL에 접근 코드를 포함하여 리다이렉트 된다.
+		  
+	2) AccessToken 발급 -> 네이버에서 제공하는 API에 접근하기 위한 토큰
+		- 유효시간이 있다(일정 시간이 되면 서비스 만료)
+		GET - https://nid.naver.com/oauth2.0/token
+			  - 제공된 전송 파라미터에 값을 추가 + 필수로 1번에서 발급받은 code를 함께 전송
+			  - 인증이 문제가 없으면 Access Token을 발급 해준다
+	
+	3) AccessToken을 사용하여 API 이용
+	회원프로필조회 API
+	GET - https://openapi.naver.com/v1/nid/me
+	Request Header Authorization : Bearer 발급받은 AccessToken
+	-> 요청 -> 회원 프로필 정보 JSON 형태로 전달이 된다.
+	
+
+URL 클래스
+java.net.URL
+-> 웹 통신과 관련된 클래스

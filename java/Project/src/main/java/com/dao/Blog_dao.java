@@ -40,10 +40,12 @@ public class Blog_dao {
 		return postNm;
 	}
 	
-	public ArrayList<Blog> getList() {
+	public ArrayList<Blog> getList(){
+		return getList(1);
+	}
+	public ArrayList<Blog> getList(int page) {
 		ArrayList<Blog> list = new ArrayList<>();
 		int limit = 5;
-		int page = 0;
 		
 		page = (page == 0)?1:page;
 		int offset = (page -1) * limit;

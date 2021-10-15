@@ -28,7 +28,8 @@
 	<dl>
 		<dt>내용</dt>
 		<dd>
-			<textarea id='content' name="content">	<c:out value='${blog.content}'/>
+			<textarea id='content' name="content">
+			<c:out value='${blog.content}'/>
 			</textarea>
 			<span class='addImage'>[이미지 추가]</span>
 		</dd>

@@ -11,8 +11,8 @@
 		<link rel="stylesheet" type="text/css" href="<%=siteURL%>/resources/css/style.css" />
 		<script src="<%=siteURL %>/resources/js/ckeditor/ckeditor.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-		<script src="<%=siteURL%>/resources/js/common.js"></script>
 		<script src="<%=siteURL %>/resources/js/layer.js"></script>
+		<script src="<%=siteURL %>/resources/js/common.js"></script>
 		<title>미니 게시판!!</title>
 	</head>
 	<body>

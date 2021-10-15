@@ -4,8 +4,12 @@
 <%@ page import = "com.dto.Blog" %>
 <%@ page import = "com.dao.Blog_dao" %>
 <% 
+int p = 1;
+if (request.getParameter("page") != null) {
+	p = Integer.parseInt(request.getParameter("page").trim());
+}
 	Blog_dao dao = new Blog_dao(); 
-	ArrayList<Blog> list =dao.getList();
+	ArrayList<Blog> list =dao.getList(p);
 %>
 <c:set var="list" value="<%=list%>" />
 <h1>포스팅</h1>
@@ -27,5 +31,11 @@
 		</li>
 	</c:forEach>
 </ul>
-<a href='post'>
-<input type='button' value='글 쓰기'></a>
+<div id="next_number">
+<span><a href="?page=1">1</a></span>
+<span><a href="?page=2">2</a></span>
+<span><a href="?page=3">3</a></span>
+<span><a href="?page=4">4</a></span>
+<span><a href="?page=5">5</a></span>
+</div><br>
+<a href='post'><input type='button' value='글 쓰기'></a>

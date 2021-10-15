@@ -4,19 +4,20 @@
 <%@ page import="com.model.dto.*" %>
 <%@ page import="java.util.*" %>
 <%
-	int p= 1;
-	if(request.getParameter("page") != null){
+	
+	int p = 1;
+	if (request.getParameter("page") != null) {
 		p = Integer.parseInt(request.getParameter("page").trim());
 	}
 	BoardDAO dao = new BoardDAO();
-	ArrayList<Board> list = dao.getList(p,5);
+	ArrayList<Board> list = dao.getList(p, 5);
 %>
 <c:set var="list" value="<%=list%>" />
-<c:forEach var="board" items="${list}" >
+<c:forEach var="board" items="${list}">
 	<div class="post_content" style="border: 1px solid blue; padding: 10px; margin-bottom: 20px;">
-		제목 : <c:out value = "${board.subject}" /><br>
+		제목 : <c:out value="${board.subject}" /><br>
 		<div>
 			${board.content}
 		</div>
-	</div>
+	 </div>
 </c:forEach>

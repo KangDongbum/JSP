@@ -1,0 +1,3 @@
+Client ID - R3uuRDF3Gslzv015zk8f
+Client Secret - 76uF3Ql2SW
+Callback URL - http://localhost:8080/LoginSns2/naverlogin

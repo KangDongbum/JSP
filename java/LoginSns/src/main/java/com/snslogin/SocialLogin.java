@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.*;
 
 import com.exception.*;
+import com.models.dto.*;
 
 import org.json.simple.parser.*;
 import org.json.simple.*;
@@ -15,7 +16,14 @@ import org.json.simple.*;
  *
  */
 public abstract class SocialLogin {
-		
+	
+	/**
+	 * Social 채널별 UserInfo 세션을 비우기
+	 * 
+	 * @param request
+	 */
+	public abstract void clearSession(HttpServletRequest request);
+	
 	/**
 	 * SNS별 인증 code를 발급받는 URL 생성
 	 * 
@@ -40,6 +48,34 @@ public abstract class SocialLogin {
 	 * @return
 	 */
 	public abstract HashMap<String, String> getUserProfile(String accessToken);
+	
+	/**
+	 * 소셜 로그인 형태로 이미 가입이 되어 있는지 여부 체크 
+	 * 		- socialChannel 과 socialId로 체크
+	 * 		- 이미 가입 되어 있는 경우 -> 바로 로그인 처리
+	 *      - 가입이 안되어 있는 경우 -> 회원 가입 페이지(소셜 로그인 형태)
+	 * @param userInfo
+	 * @param request - userInfo 정보를 쉽게 접근하기 위해서 세션에 담아서 처리 
+	 * @return
+	 */
+	public abstract boolean isJoin(HashMap<String, String> userInfo, HttpServletRequest request);
+	
+	/**
+	 * 이미 가입된 소셜 로그인 회원인 경우 
+	 * 세션에 저장된 userInfo를 통해서 로그인 처리 
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public abstract boolean login(HttpServletRequest request);
+	
+	/**
+	 * 세션에 저장되어 있는 각 채널별 userInfo 값을 Member 클래스 형태로 반환
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public abstract Member getSocialUserInfo(HttpServletRequest request);
 	
 	/**
 	 * Http 소켓을 통해서 응답 데이터 가져오는 메서드

@@ -20,7 +20,7 @@ text-align:center; border-top:0;}
 .xi-plus, .xi-bars{font-size: 100px; color:#000000; margin:0px 50px;}
 
 .icon_text{text-align:center;}
-.icon_text span{margin:0px 90px; font-size:13px; color:#000000;}
+.icon_text span{margin:0px 90px; font-size:16px; color:#ffffff;}
 
 #box dt{color:#ffffff; font-size:25px;}
 #box dd input[type="text"]{
@@ -29,5 +29,7 @@ text-align:center; border-top:0;}
 	color:#000000;
 	text-align:center;}
 
+ul a{color:#07F8E4;}
 
- 
+#next_number{text-align:center; font-size:25px;}
+#next_number a{padding:0px 20px;}

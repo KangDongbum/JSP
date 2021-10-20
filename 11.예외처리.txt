@@ -1,0 +1,31 @@
+1.page - errorpage -> 오류 발생 -> 이동할 페이지
+	    - isErrorPage -> true -> Throwable exception 인스턴스가 내장 객체로 생성
+		
+2. web.xml
+	에러 코드
+	에러 타입
+	
+	<error-page>
+		<error-code></error-code>
+		<location>에러 발생시 이동 URL</location>
+	</error-page>
+	
+	<error-page>
+		<exception-type>java.lang.NullPointException</exception-type>
+		<location>...</location>
+	</error-page>
+
+3. try ~ catch
+try(리소스(close - 자동(AutoCloseable 인터페이스)){
+	예외가 발생할지도 모르는 구간
+	throw 예외 인스턴스;
+} catch(Exception ... 인스턴스){
+	예외가 발생할면 유입되는 구간
+} finally{
+	예외가 발생하든 안하든 하상 실행되는 구간
+}
+
+예외 처리 우선순위
+1. try ~ catch
+2. page 디렉티브 태그 errorPage
+3. web.xml

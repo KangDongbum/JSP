@@ -1,0 +1,22 @@
+Locale 클래스 - 지역화
+
+JSTl fmt
+1) Locale 설정 - setLocale <fmt:setLocale value="ko" />
+					- requestEndcoding <fmt:requestEndcoding value="utf-8"/>
+												(request.setCharacterEncoding="utf-8";)
+					
+2)  다국어 처리 - bundle -> 언어 번역 데이터가 담겨 있는 경로
+										(WEB-INF/classes/.../*.properties)
+										( ......_en.properties - 영어 번역본, ....._ko.properties - 한국어)
+						message -> 리소스 번들(bundle)에서 출력할 번역 데이터를 가져와서 출력
+						setBundle
+3) 날짜 			 - formatDate -> Date 인스턴스 -> 문자열 특정 형식의 날짜로 변경
+					 - parseDate -> 특정 형시그이 날짜 문자열 -> Date 인스턴스
+
+4) 숫자 			 - formatNumber - 특정 형식의 숫자로 표기(문자열)
+					 - parseNumber - 특정 형식의 문자열로 되어 있는 숫자 -> 정수, 실수
+	
+5) 시간대 - setTimeZone
+			  - timeZone
+			  
+groupingUsed

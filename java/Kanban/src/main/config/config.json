@@ -1,16 +1,25 @@
 { 
 	"Environment" : "production",
+	"PageTitle" : "사이트 기본제목",
 	"DB":  { 
 		"Driver": "com.mysql.cj.jdbc.Driver",
 		"Url" : "jdbc:mysql://localhost:3306/JSPBookDB",
 		"user" : "root", 
-		"password" : "123456"
+		"password" : "aA!12345"
 	},
-	"LogDir" : "C:\\logs",
+	"LogDir" : "D:\\logs",
 	"css": {
-		"/kanban": "kanban/test||kanban/test2"
+		
 	},
 	"js":{
-		"/kanban":"kanban/test||kanban/test2"
-	}
+		
+	},
+	"AddonHeader":{
+		"*" : "common",
+		"/kanban" : "test"
+	},
+	"AddonFooter" :{
+		"*" : "common",
+		"/kanban" : "test"
+ 	}
  }

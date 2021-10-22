@@ -3,3 +3,10 @@ URL
 2. /kanban/add - 작업 등록
 3. /kanban/edit - 작업 수정
 4. /kanban/remove - 작업 삭제
+
+/member
+	/join - 회원가입
+	/info - 회원정보 수정
+	/login - 로그인
+	/findid - 아이디 찾기
+	/findpw - 비밀번호 찾기

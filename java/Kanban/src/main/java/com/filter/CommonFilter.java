@@ -35,7 +35,27 @@ public class CommonFilter implements Filter {
 		Logger.log(request);
 		
 		/** URI별 추가 CSS */
-		config.getCss();
+		request.setAttribute("addCss", config.getCss());
+		
+		/** URI별 추가 JS */
+		request.setAttribute("addScripts", config.getScript());
+		
+		/** 사이트 기본 제목 */
+		request.setAttribute("pageTitle",config.get("PageTitle"));
+		
+		/** Environment - development(개발중), production(서비스 중) */
+		String env = ((String)config.get("Environment")).equals("production")?"production":"development";
+		request.setAttribute("environment", env);
+		
+		/** CSS, JS 버전 */
+		String cssjsVersion = null;
+		if(env.equals("development")) {
+			cssjsVersion ="?v= " + String.valueOf(System.currentTimeMillis());
+		}
+		request.setAttribute("cssjsVersion",cssjsVersion);
+		
+		/** Body 태그 추가 클래스 */
+		request.setAttribute("bodyClass", config.getBodyClass());
 		
 		/** rootURL */
 		String rootURL = request.getServletContext().getContextPath();
@@ -62,12 +82,28 @@ public class CommonFilter implements Filter {
 		response.setContentType("text/html; charset=utf-8");
 		RequestDispatcher rd = request.getRequestDispatcher("/view/outline/header/main.jsp");
 		rd.include(request, response);
+		
+		/** 헤더 추가 영역 처리) */
+		Config config = Config.getInstance();
+		String addonURL = config.getHeaderAddon();
+		if(addonURL != null) {
+			RequestDispatcher inc = request.getRequestDispatcher(addonURL);
+			inc.include(request,response);	
+		}
 	}
 	
 	/**
 	 * 푸터 출력 
 	 */
 	private void printFooter(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+		/** 푸터 추가 영역 처리 */
+		Config config = Config.getInstance();
+		String addonURL = config.getFooterAddon();
+		if(addonURL != null) {
+			RequestDispatcher inc = request.getRequestDispatcher(addonURL);
+			inc.include(request, response);
+		}
+		
 		RequestDispatcher rd = request.getRequestDispatcher("/view/outline/footer/main.jsp");
 		rd.include(request, response);
 	}

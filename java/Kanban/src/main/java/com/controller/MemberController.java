@@ -3,6 +3,10 @@ package com.controller;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import com.core.Logger;
+import com.models.member.*;
 
 /**
  *	/member/* 컨트롤러
@@ -11,6 +15,7 @@ import java.io.IOException;
 public class MemberController extends HttpServlet{
 	
 	private String httpMethod; // Http 요청 메소드, GET, POST
+	private PrintWriter out;
 	
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) 
 		throws ServletException, IOException{
@@ -20,8 +25,11 @@ public class MemberController extends HttpServlet{
 		if(httpMethod.equals("GET")){
 			res.setContentType("text/html; charset=utf-8");
 		} else { //GET이 아닌 경우 -> 유입된 엽력 양식 데이터 처
-			req.setCharacterEncoding("utf-8");
+			res.setContentType("text/html; charset=utf-8");
 		}
+		
+		/** PrintWriter 공통 */
+		out = res.getWriter();
 		
 		String URI = req.getRequestURI();
 		String mode = URI.substring(URI.lastIndexOf("/")+1);
@@ -65,7 +73,15 @@ public class MemberController extends HttpServlet{
 			RequestDispatcher rd = req.getRequestDispatcher("/view/member/form.jsp");
 			rd.include(req, res);
 		} else { //양식 처리
-			
+			res.setContentType("text/html; charset=utf-8");
+			MemberDao dao = MemberDao.getInstance();
+			try {
+				dao.join(req);
+			} catch(Exception e) {
+				res.setContentType("text/html; charset=utf-8");
+				out.printf("<script>alert('%s');</script>",e.getMessage());
+				Logger.log(e);
+			}
 		}
 	}
 	

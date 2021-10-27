@@ -23,36 +23,17 @@ public class DB {
 		return conn;
 	}
 	
-	public static <E extends Dto> ArrayList<E> executeQuery(String sql, ArrayList<Map<String, String>> bindings, E dto) { // E -> Object
+	public static <E extends Dto> ArrayList<E> executeQuery(String sql, ArrayList<DBField> bindings, E dto) { // E -> Object
 		
 		ArrayList<E> list = new ArrayList<>();
-		ArrayList<String> logBindings = new ArrayList<>();
+		ArrayList<String> logBindings = null;
 		
 		try (Connection conn = DB.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			if (bindings != null) {
-				int no = 1;
-				for (Map<String, String> map : bindings) {
-					Iterator<String> ir = map.keySet().iterator();
-					if (ir.hasNext()) {
-						String dataType = ir.next();
-						String value = map.get(dataType);
-						logBindings.add(value);
-						switch(dataType) {
-							case "String" :
-								pstmt.setString(no, value);
-								break;
-							case "Integer" :
-								pstmt.setInt(no, Integer.valueOf(value));
-								break;
-							case "Double" : 
-								pstmt.setDouble(no, Double.valueOf(value));
-								break;
-						}
-					}
-					no++;
-				} // endfor 
-			
+				// 바인딩 처리
+				logBindings = processBinding(pstmt, bindings);
+				
 				ResultSet rs = pstmt.executeQuery();
 				while(rs.next()) {
 					list.add((E)dto.setResultSet(rs));
@@ -75,9 +56,9 @@ public class DB {
 		return list;
 	}
 	
-	public static <E extends Dto> E executeQueryOne(String sql, ArrayList<Map<String,String>> bindings, E dto) {
+	public static <E extends Dto> E executeQueryOne(String sql, ArrayList<DBField> bindings, E dto) {
 		ArrayList<E> list = executeQuery(sql, bindings, dto);
-		if(list == null) {
+		if(list == null || list.size() == 0) {
 			return null;
 		}else{
 			return list.get(0);
@@ -92,37 +73,16 @@ public class DB {
 	 * @param isreturnGeneratedKey Insert인 경우 추가된 번호 반환
 	 * @return int - INSERT인 경우 -> 추가된 증감번호(Primary Key, Auto Increment), 나머지는 - 반영된 투플의 개수
 	 */
-	public static int executeUpdate(String sql, ArrayList<Map<String, String>> bindings, boolean isReturnGeneratedKey) {
+	public static int executeUpdate(String sql, ArrayList<DBField> bindings, boolean isReturnGeneratedKey) {
 		
 		int rs = 0;
-		ArrayList<String>logBindings = new ArrayList<>();
+		ArrayList<String>logBindings = null;
 		
 		try(Connection conn = getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 			
-			int no = 1;
-			for(Map<String, String> map : bindings) {
-				Iterator<String> ir = map.keySet().iterator();
-				if(ir.hasNext()) { // Map은 1개씩만 추가
-					String dataType = ir.next();
-					String value = map.get(dataType);
-					logBindings.add(value);
-					switch(dataType) {
-					case "String" :
-						pstmt.setString(no, value);
-						break;
-					case "Integer" :
-						pstmt.setInt(no, Integer.valueOf(value));
-						break;
-					case "Double" :
-						pstmt.setDouble(no, Double.valueOf(value));
-						break;
-					}
-				}
+			logBindings = processBinding(pstmt,bindings);
 				
-				no++;
-			}
-			
 			rs = pstmt.executeUpdate();
 			
 			/** INSERT후 추가된 증감번호 */
@@ -151,7 +111,7 @@ public class DB {
 		return rs;
 	}
 	
-	public static int executeUpdate(String sql ,ArrayList<Map<String,String>>bindings) {
+	public static int executeUpdate(String sql ,ArrayList<DBField>bindings) {
 		
 		return executeUpdate(sql, bindings, false);
 	}
@@ -164,10 +124,10 @@ public class DB {
 	 * @param bindings
 	 * @return
 	 */
-	public static int getCount(String tableName, String[] fields, ArrayList<Map<String, String>> bindings) {
+	public static int getCount(String tableName, String[] fields, ArrayList<DBField> bindings) {
 		
 		int count = 0;
-		ArrayList<String> logBindings = new ArrayList<>();
+		ArrayList<String> logBindings = null;
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT COUNT(*) cnt FROM ");
@@ -192,28 +152,7 @@ public class DB {
 			PreparedStatement pstmt = conn.prepareStatement(sql)){
 		/** 데이터 바인딩 S */
 		if(fields != null && fields.length > 0 && bindings != null) {
-			int no = 1;
-			for(Map<String, String> map : bindings) {
-				Iterator<String> ir = map.keySet().iterator();
-				if(ir.hasNext()) {
-					String dataType = ir.next();
-					String value = map.get(dataType);
-					logBindings.add(value);
-					switch(dataType) {			
-					case "String" :
-						pstmt.setString(no,value);
-						break;
-					case "Integer" :
-						pstmt.setInt(no,Integer.parseInt(value));
-						break;
-					case "Double" :
-						pstmt.setDouble(no,Double.valueOf(value));
-						break;
-					}
-				}
-				
-				no++;
-			}
+			logBindings = processBinding(pstmt,bindings);
 		}
 		/** 데이터 바인딩 E */
 		ResultSet rs = pstmt.executeQuery();
@@ -250,11 +189,42 @@ public class DB {
 	 * @param data
 	 * @return
 	 */
-	public static Map<String, String> setBinding(String dataType, String data){
-		Map<String, String> map = new HashMap<>();
-		map.put(dataType, data);
-		
-		return map;
+	public static DBField setBinding(String dataType, String data){
+		return new DBField(dataType, data);
 	}
 	
+	/**
+	 * SQL 바인딩 처리
+	 * 
+	 * @param pstmt
+	 * @param bindings
+	 * @throws SQLException 
+	 */
+	public static ArrayList<String> processBinding(PreparedStatement pstmt, ArrayList<DBField>bindings) throws SQLException {
+		
+		//로그용 바인딩 데이터
+		ArrayList<String> logBindings = new ArrayList<>();
+		
+		int no = 1;
+		for(DBField binding : bindings) {
+			String dataType = binding.getDataType();
+			String value = binding.getValue();
+			logBindings.add(value);
+			switch(dataType) {
+			case"String" :
+				pstmt.setString(no, value);
+				break;
+			case"Integer" :
+				pstmt.setInt(no, Integer.valueOf(value));
+				break;
+			case"Double" :
+				pstmt.setDouble(no, Double.valueOf(value));
+				break;
+			}
+			
+			no++;
+		}
+		
+		return logBindings;
+	}
 }

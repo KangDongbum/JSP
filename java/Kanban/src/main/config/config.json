@@ -7,7 +7,7 @@
 		"user" : "kanban", 
 		"password" : "123456"
 	},
-	"LogDir" : "D:\\logs",
+	"LogDir" : "C:\\logs",
 	"css": {
 		
 	},
@@ -15,11 +15,9 @@
 		
 	},
 	"AddonHeader":{
-		"*" : "common",
-		"/kanban" : "test"
+		"*" : "common"
 	},
 	"AddonFooter" :{
-		"*" : "common",
-		"/kanban" : "test"
+		"*" : "common"
  	}
  }

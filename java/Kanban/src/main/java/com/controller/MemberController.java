@@ -50,6 +50,9 @@ public class MemberController extends HttpServlet{
 		case"findpw": //비밀번호 찾기
 			findpwController(req,res);
 			break;
+		case"logout": //로그아웃
+			logoutController(req,res);
+			break;
 		default: //없는 페이지
 			RequestDispatcher rd =req.getRequestDispatcher("/view/error/404.jsp");
 			rd.forward(req,res);
@@ -117,7 +120,13 @@ public class MemberController extends HttpServlet{
 	private void loginController(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException{
 			MemberDao dao = MemberDao.getInstance();
-			dao.login(req);
+			try {
+				dao.login(req);
+				out.printf("<script>parent.location.repacle('%s')</script>", "../kanban/work");
+			}catch(Exception e) {
+				Logger.log(e);
+				out.printf("<script>alert('%s')</script>", e.getMessage());
+			}
 		}
 	
 	/**
@@ -143,4 +152,18 @@ public class MemberController extends HttpServlet{
 			throws ServletException, IOException{
 			
 		}
+	
+	/**
+	 * 로그아웃
+	 * 
+	 * @param req
+	 * @param res
+	 * @throws ServltException
+	 * @throws IOException
+	 */
+	private void logoutController(HttpServletRequest req, HttpServletResponse res)
+			throws ServletException, IOException{
+		MemberDao dao = MemberDao.getInstance();
+		dao.logout(req);
+	}
 }

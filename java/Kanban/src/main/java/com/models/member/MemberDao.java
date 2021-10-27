@@ -1,12 +1,16 @@
 package com.models.member;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import java.util.*;
 import java.sql.*;
 import static com.core.DB.setBinding;
 
 import com.core.DB;
 import com.core.Logger;
+import com.core.DBField;
 
 import org.mindrot.jbcrypt.*;
 
@@ -23,6 +27,49 @@ public class MemberDao {
 	}
 	
 	/**
+	 * 로그인 유지 처리
+	 * 
+	 * @param req
+	 */
+	public static void init(ServletRequest req) {
+		if(req instanceof HttpServletRequest) {
+			MemberDao dao = getInstance();
+			HttpServletRequest req2 = (HttpServletRequest)req;
+			
+			HttpSession session = req2.getSession();
+			int memNo = 0;
+			Member member = null;
+			if(session.getAttribute("memNo") != null) {
+				memNo = (Integer)session.getAttribute("memNo");
+				member = dao.getMember(memNo);
+			}
+			
+			boolean isLogin = false;
+			
+			if(member != null) {
+				req.setAttribute("member", member);
+				isLogin = true;
+			}
+			req.setAttribute("isLogin", isLogin);
+		}
+	}
+	
+	/**
+	 * 로그인여부 체크
+	 * 
+	 * @param req
+	 * @return
+	 */
+	public static boolean isLogin(ServletRequest req) {
+		boolean isLogin = false;
+		if(req.getAttribute("isLogin") != null) {
+			isLogin = (Boolean)req.getAttribute("isLogin");
+		}
+		
+		return isLogin;
+	}
+	
+	/**
 	 * 회원 가입 처리
 	 * 
 	 * @param res
@@ -35,7 +82,7 @@ public class MemberDao {
 		 */
 		checkJoinData(req);
 		
-		ArrayList<Map<String,String>> bindings = new ArrayList<>();
+		ArrayList<DBField> bindings = new ArrayList<>();
 		String sql = "INSERT INTO member (memId, memPw, memPwHint, memNm,cellphone) VALUES(?,?,?,?,?)";
 		String memPw = req.getParameter("memPw");
 		String hash = BCrypt.hashpw(memPw, BCrypt.gensalt(10));
@@ -109,7 +156,7 @@ public class MemberDao {
 		
 		// 아이디 중복 체크
 		String[] fields = { "memId" };
-		ArrayList<Map<String,String>>bindings = new ArrayList<>();
+		ArrayList<DBField>bindings = new ArrayList<>();
 		bindings.add(setBinding("String", memId));
 		int count = DB.getCount("member", fields, bindings);
 		if(count > 0) { // 아이디 중복
@@ -126,11 +173,10 @@ public class MemberDao {
 		}
 		
 		// 비밀번호 복잡성(숫자 + 알파벳 + 특수문자가 각각 1개 이상 입력)
-		/**
-		if(memPw.matches("[^0-9]+") && memPw.matches("[^a-zA-z]+") && memPw.matches("[^~!@#$%^&*()]+")){
+		if(!memPw.matches(".*[^0-9].*") || !memPw.matches(".*[^a-zA-z].*") || !memPw.matches(".*[~!@#$%^&*()].*")){
 			throw new Exception("비밀번호는 1개 이상의 알파벳, 숫자 , 특수문자를 각각 포함해야 합니다.");
 		};
-		*/
+		
 		
 		// 비밀번호 확인
 		String memPwRe = req.getParameter("memPwRe");
@@ -163,19 +209,33 @@ public class MemberDao {
 	 * @param memId
 	 * @param memPw
 	 * @return
+	 * @throws Exception 
 	 */
-	public boolean login(HttpServletRequest req, String memId , String memPw) {
+	public boolean login(HttpServletRequest req, String memId , String memPw) throws Exception {
 		/**
 		 * 1. memId를 통해 회원 정보를 조회
 		 * 2. 회원 정보가 조회가 되면(실제 회원 있으면) - 비밀번호를 체크
 		 * 3. 비밀번호도 일치? -> 세션 처리(회원 번호 - memNo 세션에 저장)
 		 */
 		Member member = getMember(memId);
-		System.out.println(member.getMemNm());
-		return false;
+		if(member == null) { // memId에 일치하는 회원이 X
+			throw new Exception("가입하지 않은 아이디 입니다.");
+		}
+		
+		// 비밀번호 체크
+		boolean match = BCrypt.checkpw(memPw, member.getMemPw());
+		if(!match) { // 비밀번호 불일치
+			throw new Exception("비밀번호가 일치하지 않습니다.");
+		}
+		
+		// 세션 처리
+		HttpSession session = req.getSession();
+		session.setAttribute("memNo", member.getMemNo());
+		
+		return true;
 	}
 	
-	public boolean login(HttpServletRequest req) {
+	public boolean login(HttpServletRequest req) throws Exception{
 		return login(req,
 				req.getParameter("memId"),
 				req.getParameter("memPw")
@@ -210,11 +270,19 @@ public class MemberDao {
 	 */
 	public Member getMember(int memNo) {
 		String sql = "SELECT * FROM member WHERE memNo = ?";
-		ArrayList<Map<String, String>> bindings = new ArrayList<>();
+		ArrayList<DBField> bindings = new ArrayList<>();
 		bindings.add(setBinding("Integer",String.valueOf(memNo)));
 		
 		Member member = DB.executeQueryOne(sql, bindings, new Member());
-		
 		return member;
+	}
+	
+	/**
+	 * 로그아웃
+	 * 
+	 */
+	public void logout(HttpServletRequest req) {
+		HttpSession session = req.getSession();
+		session.invalidate();
 	}
 }

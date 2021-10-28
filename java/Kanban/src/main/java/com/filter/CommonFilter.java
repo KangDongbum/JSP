@@ -24,7 +24,8 @@ public class CommonFilter implements Filter {
 		
 	}
 	
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+			throws ServletException, IOException {
 		/** 사이트 설정 초기화 */
 		Config.init(request);
 		Config config = Config.getInstance();
@@ -61,6 +62,16 @@ public class CommonFilter implements Filter {
 		/** rootURL */
 		String rootURL = request.getServletContext().getContextPath();
 		request.setAttribute("rootURL", rootURL);
+		
+		/** 요청 메소드 + requestURL, Request Encoding 설정 */
+		if(request instanceof HttpServletRequest) {
+			HttpServletRequest req = (HttpServletRequest)request;
+
+			request.setAttribute("httpMethod", req.getMethod().toUpperCase());
+			request.setAttribute("requestURL", req.getRequestURL().toString());
+			
+			request.setCharacterEncoding("UTF-8");
+		}
 		
 		/** 로그인 유지 */
 		MemberDao.init(request);
@@ -133,15 +144,15 @@ public class CommonFilter implements Filter {
 				}
 			}
 			/** 정적 경로 제외 E */
+			String outline = request.getParameter("outline");
 			
 			/** 요청 메서드 GET 방식이 아닌 경우 제외 */
 			String method = req.getMethod().toUpperCase();
-			if (!method.equals("GET")) {
+			if (!method.equals("GET") && (outline != null && !outline.equals("print"))) {
 				return false;
 			}
 			
 			/** 요청 파라미터 중에서 outline = none일때 제외 */
-			String outline = request.getParameter("outline");
 			if (outline != null && outline.equals("none")) {
 				return false;
 			}

@@ -177,7 +177,6 @@ public class MemberDao {
 			throw new Exception("비밀번호는 1개 이상의 알파벳, 숫자 , 특수문자를 각각 포함해야 합니다.");
 		};
 		
-		
 		// 비밀번호 확인
 		String memPwRe = req.getParameter("memPwRe");
 		if(!memPw.equals(memPwRe)) {
@@ -284,5 +283,48 @@ public class MemberDao {
 	public void logout(HttpServletRequest req) {
 		HttpSession session = req.getSession();
 		session.invalidate();
+	}
+	
+	/**
+	 * 아이디 찾기 
+	 * @param memNm
+	 * @param cellPhone
+	 * @return
+	 * @throws Exception
+	 */
+	public String findId(String memNm, String cellPhone) throws Exception{
+		if (memNm == null || memNm.trim().equals("")) {
+			throw new Exception("회원명을 입력하세요");
+		}
+		
+		if(cellPhone == null || cellPhone.trim().equals("")) {
+			throw new Exception("휴대전화번호를 입려하세요");
+		}
+		
+		memNm = memNm.trim();
+		cellPhone = cellPhone.replaceAll("[^0-9]","");
+		
+		String sql = "SELECT * FROM member WHERE memNm = ? AND cellPhone = ?";
+		ArrayList<DBField>bindings = new ArrayList<>();
+		bindings.add(setBinding("String", memNm));
+		bindings.add(setBinding("String",cellPhone));
+		
+		Member member = DB.executeQueryOne(sql, bindings, new Member());
+		String memId = null;
+		if(member != null) {
+			memId = member.getMemId();
+		}
+		
+		return memId;
+	}
+	
+	public String findId(HttpServletRequest req)  throws Exception{
+		
+		return findId(req.getParameter("memNm"), req.getParameter("cellPhone"));
+	}
+	
+	public Member findPw(HttpServletRequest req) {
+		
+		return null;
 	}
 }

@@ -26,7 +26,6 @@ public class MemberController extends HttpServlet{
 			res.setContentType("text/html; charset=utf-8");
 		} else { //GET이 아닌 경우 -> 유입된 엽력 양식 데이터 처
 			res.setContentType("text/html; charset=utf-8");
-			req.setCharacterEncoding("utf-8");
 		}
 		
 		/** PrintWriter 공통 */
@@ -119,13 +118,18 @@ public class MemberController extends HttpServlet{
 	 */
 	private void loginController(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException{
-			MemberDao dao = MemberDao.getInstance();
-			try {
-				dao.login(req);
-				out.printf("<script>parent.location.repacle('%s')</script>", "../kanban/work");
-			}catch(Exception e) {
-				Logger.log(e);
-				out.printf("<script>alert('%s')</script>", e.getMessage());
+		if(httpMethod.equals("GET")) {
+			RequestDispatcher rd = req.getRequestDispatcher("/view/main/index.jsp");
+			rd.include(req,res);
+		}else {
+				MemberDao dao = MemberDao.getInstance();
+				try {
+					dao.login(req);
+					out.printf("<script>parent.location.replace('%s')</script>", "../kanban/work");
+				}catch(Exception e) {
+					Logger.log(e);
+					out.printf("<script>alert('%s')</script>", e.getMessage());
+				}
 			}
 		}
 	
@@ -138,7 +142,21 @@ public class MemberController extends HttpServlet{
 	 */
 	private void findidController(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException{
+			res.setContentType("text/html; charset=utf-8");
 			
+			if(httpMethod.equals("POST")) {
+				MemberDao dao = MemberDao.getInstance();
+				try {
+					String memId = dao.findId(req);
+					req.setAttribute("memId", memId);
+				} catch (Exception e) {
+					Logger.log(e);
+					out.printf("<script>alert('%s');</script>", e.getMessage());
+				}
+			}
+			
+			RequestDispatcher rd = req.getRequestDispatcher("/view/member/findid.jsp");
+			rd.include(req,res);		
 		}
 	
 	/**
@@ -151,6 +169,13 @@ public class MemberController extends HttpServlet{
 	private void findpwController(HttpServletRequest req, HttpServletResponse res)
 			throws ServletException, IOException{
 			
+			if(httpMethod.equals("GET")) { // 비밀번호 찾기 양식
+				RequestDispatcher rd = req.getRequestDispatcher("/view/member/findpw.jsp");
+				rd.include(req, res);
+			}else { // 일치 하는 회원 검증 -> 비밀번호 초기화 페이지로 이동
+				MemberDao dao = MemberDao.getInstance();
+				dao.findPw(req);
+			}
 		}
 	
 	/**
@@ -165,5 +190,7 @@ public class MemberController extends HttpServlet{
 			throws ServletException, IOException{
 		MemberDao dao = MemberDao.getInstance();
 		dao.logout(req);
+		PrintWriter out = res.getWriter();
+		out.printf("<script>location.replace('%s');</script>","../index.jsp");
 	}
 }

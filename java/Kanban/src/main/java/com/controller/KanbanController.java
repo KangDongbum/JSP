@@ -40,6 +40,9 @@ public class KanbanController extends HttpServlet{
 			case"remove": //작업 삭제
 				removeController(req,res);
 				break;
+			default : // 없는 페이지
+				RequestDispatcher rd = req.getRequestDispatcher("/view/error/404.jsp");
+				rd.forward(req,res);
 		}
 	}
 	

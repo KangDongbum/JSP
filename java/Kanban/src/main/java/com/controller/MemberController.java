@@ -6,6 +6,7 @@ import java.io.*;
 
 import com.core.Logger;
 import com.models.member.*;
+import com.models.snslogin.*;
 
 /**
  *  /member/* 컨트롤러
@@ -52,8 +53,11 @@ public class MemberController extends HttpServlet {
 			case "logout" : // 로그아웃 
 				logoutController(request, response);
 				break;
+			case "naver_login" : //네이버 로그인 callbackURL
+				naverLoginController(request, response);
+				break;
 			default : // 없는 페이지 
-				RequestDispatcher rd = request.getRequestDispatcher("/views/error/404.jsp");
+				RequestDispatcher rd = request.getRequestDispatcher("/view/error/404.jsp");
 				rd.forward(request, response);
 		}
 	}
@@ -72,7 +76,7 @@ public class MemberController extends HttpServlet {
 	private void joinController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (httpMethod.equals("GET")) { // 양식 출력 
 			request.setAttribute("action", "../member/join"); // 양식 처리 경로
-			RequestDispatcher rd = request.getRequestDispatcher("/views/member/form.jsp");
+			RequestDispatcher rd = request.getRequestDispatcher("/view/member/form.jsp");
 			rd.include(request, response);
 		} else { // 양식 처리
 			MemberDao dao = MemberDao.getInstance();
@@ -119,12 +123,13 @@ public class MemberController extends HttpServlet {
 		
 		if (httpMethod.equals("GET")) { // 수정 양식
 			request.setAttribute("action", "../member/info");
-			RequestDispatcher rd = request.getRequestDispatcher("/views/member/form.jsp");
+			RequestDispatcher rd = request.getRequestDispatcher("/view/member/form.jsp");
 			rd.include(request, response);
 		} else { // 수정 처리 
 			MemberDao dao = MemberDao.getInstance();
 			try {
 				dao.updateInfo(request);
+				out.println("<script>alert('수정되었습니다.');parent.location.reload();</script>");
 			} catch (Exception e) {
 				Logger.log(e);
 				out.printf("<script>alert('%s');</script>", e.getMessage());
@@ -142,7 +147,10 @@ public class MemberController extends HttpServlet {
 	 */
 	private void loginController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (httpMethod.equals("GET")) {
-			RequestDispatcher rd = request.getRequestDispatcher("/views/main/index.jsp");
+			String naverCodeURL = NaverLogin.getInstance().getCodeURL(request);
+			request.setAttribute("naverCodeURL",naverCodeURL);
+			
+			RequestDispatcher rd = request.getRequestDispatcher("/view/main/index.jsp");
 			rd.include(request, response);
 		} else {
 			MemberDao dao = MemberDao.getInstance();
@@ -177,7 +185,7 @@ public class MemberController extends HttpServlet {
 			}
 		}
 		
-		RequestDispatcher rd = request.getRequestDispatcher("/views/member/findid.jsp");
+		RequestDispatcher rd = request.getRequestDispatcher("/view/member/findid.jsp");
 		rd.include(request, response);
 		
 	}
@@ -193,7 +201,7 @@ public class MemberController extends HttpServlet {
 	private void findpwController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		if (httpMethod.equals("GET")) { // 비밀번호 찾기 양식 
-			RequestDispatcher rd = request.getRequestDispatcher("/views/member/findpw.jsp");
+			RequestDispatcher rd = request.getRequestDispatcher("/view/member/findpw.jsp");
 			rd.include(request, response);
 		} else { // 일치 하는 회원 검증 -> 비밀번호 초기화 페이지로 이동 
 			MemberDao dao = MemberDao.getInstance();
@@ -255,7 +263,7 @@ public class MemberController extends HttpServlet {
 				out.printf("<script>alert('%s');location.replace('%s');</script>", e.getMessage(), "../member/findpw");
 				return;
 			}
-			RequestDispatcher rd = request.getRequestDispatcher("/views/member/changepw.jsp");
+			RequestDispatcher rd = request.getRequestDispatcher("/view/member/changepw.jsp");
 			rd.include(request, response);
 		} else { // 초기화 처리 
 			try {
@@ -287,4 +295,23 @@ public class MemberController extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.printf("<script>location.replace('%s');</script>", "../index.jsp");
 	}
+	
+	/**
+	 * 네이버 로그인 Callback URL
+	 * 
+	 * @param req
+	 * @param res
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void naverLoginController(HttpServletRequest req, HttpServletResponse res)
+		throws ServletException, IOException{
+			NaverLogin naver = NaverLogin.getInstance();
+			try {
+				naver.getAccessToken(req);
+			} catch (Exception e) {
+				Logger.log(e);
+				out.printf("<script>alert('%s');location.replace('../member/login');</script>", e.getMessage());
+			}
+		}
 }

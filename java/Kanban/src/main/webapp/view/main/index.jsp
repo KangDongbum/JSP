@@ -1,9 +1,11 @@
 <%@ page contentType="text/html; charset=utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-	String rootURL = (String)request.getAttribute("rootURL");
+	String rootURL = (String)request.getAttribute("rootURL");	
+	String naverCodeURL =(String)request.getAttribute("naverCodeURL");
 %>
 <c:set var="rootURL" value="<%=rootURL%>"/>
+<c:set var="naverCodeURL" value="<%=naverCodeURL%>"/>
 <main>
 	<div class="login_box">
 		<div class='tit'>로그인</div>
@@ -22,6 +24,9 @@
 		</div>
 		
 		<input type="submit" value="로그인">
+		<a href="${naverCodeURL}">
+		<img src="${rootURL}/resources/img/naverLoginbtn.png" width="340">
+		</a>
 		</form>
 	</div>
 </main>

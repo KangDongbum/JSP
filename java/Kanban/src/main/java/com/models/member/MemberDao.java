@@ -113,6 +113,9 @@ public class MemberDao {
 			throw new Exception("회원정보 수정은 로그인이 필요합니다.");
 		}
 		
+		/** 수정 데이터 체크 */
+		checkUpdataData(request);
+		
 		Member member = (Member)request.getAttribute("member");
 		String memPwHint = request.getParameter("memPwHint");
 		String memNm = request.getParameter("memNm");
@@ -120,11 +123,28 @@ public class MemberDao {
 		if (cellPhone != null) {
 			cellPhone = cellPhone.replaceAll("[^0-9]", "");
 		}
-		String sql = "UPDATE member SET memPwHint = ?, memNm = ?, cellPhone = ? WHERE memNo = ?";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE member SET memPwHint = ?, memNm = ?, cellPhone = ? WHERE memNo = ?");
+		/** 비밀번호 변경 추가 처리 */
+		String memPw = request.getParameter("memPw");
+		String hash = null;
+		if(memPw != null && memPw.trim().equals("")) {
+			sb.append(", memPw = ?");
+			hash = BCrypt.hashpw(memPw, BCrypt.gensalt(10));
+		}
+			
+		sb.append("WHERE memNo = ?");
+		String sql = sb.toString();
+		
 		ArrayList<DBField> bindings = new ArrayList<>();
 		bindings.add(setBinding("String", memPwHint));
 		bindings.add(setBinding("String", memNm));
 		bindings.add(setBinding("String", cellPhone));
+		if(hash != null) {
+			bindings.add(setBinding("String", hash));
+		}
+		
 		bindings.add(setBinding("Integer", String.valueOf(member.getMemNo())));
 		
 		int rs = DB.executeUpdate(sql, bindings);
@@ -194,39 +214,102 @@ public class MemberDao {
 		/** 아이디 체크 E */
 		
 		/** 비밀번호 체크 S */
-		// 비밀번호 자리수 체크(8자리 이상)
 		String memPw = request.getParameter("memPw");
-		if (memPw.length() < 8) {
-			throw new Exception("비밀번호는 8자리 이상 입력해 주세요.");
-		}
-		// 비밀번호 복잡성(숫자 + 알파벳 + 특수문자가 각각 1개 이상 입력)		
-		if (!memPw.matches(".*[0-9].*") || !memPw.matches(".*[a-zA-Z].*") || !memPw.matches(".*[!@#$%^&*()].*")) {
-			throw new Exception("비밀번호는 1개 이상의 알파벳, 숫자, 특수문자를 각각 포함해야 합니다.");
-		}
-		
-		
-		// 비밀번호 확인
 		String memPwRe = request.getParameter("memPwRe");
-		if (!memPw.equals(memPwRe)) {
-			throw new Exception("비밀번호를 확인해 주세요.");
-		}
+		checkPassword(memPw, memPwRe);		
 		/** 비밀번호 체크 E */
 		
 		/** 휴대전화 번호 체크 S */
 		String cellPhone = request.getParameter("cellPhone");
 		if (cellPhone != null && !cellPhone.trim().equals("")) {
-			/** 
-			 * 1. 통일성 있도록 숫자로만 추출(숫자가 아닌 문자만 제거 -> 숫자) 
-			 * 2. 패턴 체크
-			 */
-			cellPhone = cellPhone.replaceAll("[^0-9]", "");
-			String pattern = "01[016789][0-9]{3,4}[0-9]{4}";
-			if (!cellPhone.matches(pattern)) {
-				throw new Exception("휴대전화번호 형식이 아닙니다.");
+			checkCellPhone(cellPhone);			
+		}
+		/** 휴대전화 번호 체크 E */
+	}
+		
+	/**
+	 * 회원 정보 수정 데이터 체크
+	 * 
+	 * @param req
+	 * @throws Exception
+	 */
+	public void checkUpdataData(HttpServletRequest req)
+		throws Exception{
+		if(req == null) {
+			return;
+		}
+		/**
+		 * 1. 필수 항목 체크 (회원명)
+		 * 2. 휴대전화번호 -> 변경이 있는 경우 형식 체크
+		 * 3. 비밀번호 변경 시도 하는 경우 -> 비밀번호 복잡성, 정확성 체크
+		 */
+		String[] require = {
+			"memNm//회원명을 입력하세요."
+		};
+		
+		for(String s : require) {
+			String[] params = s.split("//");
+			String param = req.getParameter(params[0]);
+			if( param == null || param.trim().equals("")) {
+				 throw new Exception(params[1]);
 			}
 		}
 		
-		/** 휴대전화 번호 체크 E */
+		String cellPhone = req.getParameter("cellPhone");
+		if(cellPhone != null && cellPhone.trim().equals("")) {
+			checkCellPhone(cellPhone);
+		}
+		
+		String memPw  = req.getParameter("memPw");
+		String memPwRe = req.getParameter("memPwRe");
+		if(memPw != null && memPw.trim().equals("")) {
+			checkPassword(memPw, memPwRe);
+		}
+	}
+	
+	/**
+	 * 비밀번호 체크
+	 * 
+	 * @param memPw
+	 * @param memPwRe
+	 * @throws Exception
+	 */
+	public void checkPassword(String memPw, String memPwRe) 
+		throws Exception{
+		
+				// 비밀번호 자리수 체크(8자리 이상)
+				if (memPw.length() < 8) {
+					throw new Exception("비밀번호는 8자리 이상 입력해 주세요.");
+				}
+				// 비밀번호 복잡성(숫자 + 알파벳 + 특수문자가 각각 1개 이상 입력)		
+				if (!memPw.matches(".*[0-9].*") || !memPw.matches(".*[a-zA-Z].*") || !memPw.matches(".*[!@#$%^&*()].*")) {
+					throw new Exception("비밀번호는 1개 이상의 알파벳, 숫자, 특수문자를 각각 포함해야 합니다.");
+				}
+				
+				
+				// 비밀번호 확인
+				if (!memPw.equals(memPwRe)) {
+					throw new Exception("비밀번호를 확인해 주세요.");
+				}		
+	}
+	
+	/**
+	 * 휴대전화번호 체크
+	 * 
+	 * @param cellPhone
+	 * @throws Exception
+	 */
+	public void checkCellPhone(String cellPhone) 
+			throws Exception{
+		/** 
+		 * 1. 통일성 있도록 숫자로만 추출(숫자가 아닌 문자만 제거 -> 숫자) 
+		 * 2. 패턴 체크
+		 */
+		cellPhone = cellPhone.replaceAll("[^0-9]", "");
+		String pattern = "01[016789][0-9]{3,4}[0-9]{4}";
+		if (!cellPhone.matches(pattern)) {
+			throw new Exception("휴대전화번호 형식이 아닙니다.");
+		}
 	}
 	
 	/**

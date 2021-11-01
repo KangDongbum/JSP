@@ -31,3 +31,11 @@ P305
 https://www.figma.com
 
 Shift + R -> Ruler
+
+
+client id: mtXmzjI32ewacb6qC9aQ
+client secret : IBJ43OIb4i
+
+http://localhost:8080/Kanban/member/naver_login
+
+https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=client%20id%20mtXmzjI32ewacb6qC9aQ&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2FKanban%2Fmember%2Fnaver_login&state=1635735810644

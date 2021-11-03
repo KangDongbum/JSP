@@ -53,7 +53,7 @@ public class MemberController extends HttpServlet {
 			case "logout" : // 로그아웃 
 				logoutController(request, response);
 				break;
-			case "naver_login" : //네이버 로그인 callbackURL
+			case "naver_login" : // 네이버 로그인 Callback URL
 				naverLoginController(request, response);
 				break;
 			default : // 없는 페이지 
@@ -75,11 +75,23 @@ public class MemberController extends HttpServlet {
 	 */
 	private void joinController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (httpMethod.equals("GET")) { // 양식 출력 
+			HttpSession session = request.getSession();
+			
 			request.setAttribute("action", "../member/join"); // 양식 처리 경로
+			String socialType = "none";
+			Member socialMember = SocialLogin.getSocialMember(request);
+			if(socialMember != null){
+				socialType = socialMember.getSocialType();
+			}
+			
+			request.setAttribute("socialType", socialType);
+			request.setAttribute("socialMember", socialMember);
+			
 			RequestDispatcher rd = request.getRequestDispatcher("/view/member/form.jsp");
 			rd.include(request, response);
 		} else { // 양식 처리
 			MemberDao dao = MemberDao.getInstance();
+			Member socialMember = SocialLogin.getSocialMember(request);
 			try {
 				boolean result = dao.join(request);
 				if (!result) { // 가입 실패
@@ -87,7 +99,11 @@ public class MemberController extends HttpServlet {
 				}
 				
 				// 가입 성공 -> 로그인페이지
-				out.printf("<script>parent.location.replace('%s');</script>", "../index.jsp");
+				String redirectUrl = "../index.jsp";
+				if(socialMember != null) { // 소셜 회원 가입은 로그인 처리하므로 작업 요약으로 이동
+					redirectUrl = "../kanban/work";
+				}
+				out.printf("<script>parent.location.replace('%s');</script>", redirectUrl);
 				
 			} catch (Exception e) {
 				response.setContentType("text/html; charset=utf-8");
@@ -122,6 +138,9 @@ public class MemberController extends HttpServlet {
 		}
 		
 		if (httpMethod.equals("GET")) { // 수정 양식
+			String socialType = member.getSocialType();
+			
+			request.setAttribute("socialType", socialType);
 			request.setAttribute("action", "../member/info");
 			RequestDispatcher rd = request.getRequestDispatcher("/view/member/form.jsp");
 			rd.include(request, response);
@@ -147,8 +166,10 @@ public class MemberController extends HttpServlet {
 	 */
 	private void loginController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (httpMethod.equals("GET")) {
+			SocialLogin.clear(request);
+			
 			String naverCodeURL = NaverLogin.getInstance().getCodeURL(request);
-			request.setAttribute("naverCodeURL",naverCodeURL);
+			request.setAttribute("naverCodeURL", naverCodeURL);
 			
 			RequestDispatcher rd = request.getRequestDispatcher("/view/main/index.jsp");
 			rd.include(request, response);
@@ -297,21 +318,38 @@ public class MemberController extends HttpServlet {
 	}
 	
 	/**
-	 * 네이버 로그인 Callback URL
+	 * 네이버 로그인 Callback URL 
 	 * 
-	 * @param req
-	 * @param res
+	 * @param request
+	 * @param response
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	private void naverLoginController(HttpServletRequest req, HttpServletResponse res)
-		throws ServletException, IOException{
-			NaverLogin naver = NaverLogin.getInstance();
-			try {
-				naver.getAccessToken(req);
-			} catch (Exception e) {
-				Logger.log(e);
-				out.printf("<script>alert('%s');location.replace('../member/login');</script>", e.getMessage());
+	private void naverLoginController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		NaverLogin naver = NaverLogin.getInstance();
+		try {
+			String accessToken = naver.getAccessToken(request);
+			naver.getProfile(request, accessToken);
+			
+			/**
+			 *  네이버 소셜 채널로 이미 가입이 완료된 경우 -> 로그인 처리 
+			 *  가입이 안되어 있는 경우 -> 회원 가입 처리 
+			 */
+			if (naver.isJoin(request)) { // 가입되어 있는 경우 
+				boolean result = naver.login(request); // 로그인
+				if (!result) { // 로그인 실패 
+					throw new Exception("네이버 아이디 로그인 실패!");
+				}
+				// 로그인 성공시 작업 요약 
+				out.printf("<script>location.replace('%s');</script>", "../kanban/work");
+			} else { // 미가입
+				// 회원 가입 페이지 이동
+				out.printf("<script>location.replace('%s');</script>", "../member/join");
 			}
+			
+		} catch (Exception e) {
+			Logger.log(e);
+			out.printf("<script>alert('%s');location.replace('../member/login');</script>", e.getMessage());
 		}
+	}
 }

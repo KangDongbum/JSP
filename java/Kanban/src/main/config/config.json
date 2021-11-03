@@ -12,7 +12,7 @@
 		
 	},
 	"js":{
-		
+		"/kanban" : "kanban"
 	},
 	"AddonHeader":{
 		"*" : "common"

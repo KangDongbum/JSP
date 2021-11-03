@@ -26,7 +26,6 @@ public class KanbanController extends HttpServlet{
 			req.setCharacterEncoding("utf-8"); 
 		}
 	
-		
 		switch(mode) {
 			case"work": //작업목록
 				workController(req,res);

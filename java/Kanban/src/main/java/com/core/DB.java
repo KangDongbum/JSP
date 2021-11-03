@@ -39,18 +39,18 @@ public class DB {
 					list.add((E)dto.setResultSet(rs));
 				}
 				rs.close();
-				
-				// SQL - 로그 기록
-				StringBuilder sb = new StringBuilder();
-				sb.append("SQL : ");
-				sb.append(sql);
-				sb.append("/ Bingings : ");
-				sb.append(logBindings.toString());
-				Logger.log(sb, Logger.INFO);
 			}
 			
 		} catch (SQLException | ClassNotFoundException e) {
 			Logger.log(e);
+		} finally {
+			// SQL - 로그 기록
+			StringBuilder sb = new StringBuilder();
+			sb.append("SQL : ");
+			sb.append(sql);
+			sb.append("/ Bingings : ");
+			sb.append(logBindings.toString());
+			Logger.log(sb, Logger.INFO);
 		}
 		
 		return list;
@@ -93,19 +93,18 @@ public class DB {
 				}
 				gkrs.close();
 			}
-			
-			// SQL - 로그 기록
-			StringBuilder sb = new StringBuilder();
-			sb.append("SQL : ");
-			sb.append(sql);
-			sb.append("/ Bingings : ");
-			sb.append(logBindings.toString());
-			sb.append(" / rs ");
-			sb.append(rs);
-			Logger.log(sb, Logger.INFO);
-			
 		} catch(SQLException | ClassNotFoundException e) {
 			Logger.log(e);
+		} finally {
+			// SQL - 로그 기록
+				StringBuilder sb = new StringBuilder();
+				sb.append("SQL : ");
+				sb.append(sql);
+				sb.append("/ Bingings : ");
+				sb.append(logBindings.toString());
+				sb.append(" / rs ");
+				sb.append(rs);
+				Logger.log(sb, Logger.INFO);
 		}
 		
 		return rs;

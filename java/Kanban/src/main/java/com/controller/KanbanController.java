@@ -64,7 +64,7 @@ public class KanbanController extends HttpServlet{
 			
 		} else { //등록 양식
 			RequestDispatcher rd = req.getRequestDispatcher("/view/kanban/form.jsp");
-			rd.include(req, res);
+			rd.forward(req, res);
 		}
 	}
 	

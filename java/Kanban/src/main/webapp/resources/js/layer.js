@@ -57,7 +57,7 @@ const layer = {
 			url += "outline=none";
 			axios({
 				method : "GET",
-				url : url + "?outline=none"
+				url : url,
 			})
 			.then((res) =>{
 				innerDiv.innerHTML = res.data;

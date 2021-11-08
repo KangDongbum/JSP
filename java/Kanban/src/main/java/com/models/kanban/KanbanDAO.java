@@ -1,7 +1,7 @@
 package com.models.kanban;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import javax.servlet.http.*;
 
 import com.core.*;
 import com.models.member.*;
@@ -12,7 +12,7 @@ public class KanbanDAO {
 	private KanbanDAO() {};
 	
 	public static KanbanDAO getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new KanbanDAO();
 		}
 		
@@ -20,17 +20,33 @@ public class KanbanDAO {
 	}
 	
 	/**
-	 * 작업 목록 추가
+	 * 작업 목록 추가 
 	 * 
-	 * @param req
+	 * @param request
 	 * @return
 	 */
-	public boolean add(HttpServletRequest req) {
+	public boolean add(HttpServletRequest request) throws Exception {
+	
+		HashMap<String, String> params = FileUpload.getInstance().upload(request).get();
 		
-		HashMap<String, String> params = FileUpload.getInstance().upload(req).get();
+		/** 유효성 검사 S */
+		String[] required = {
+				"status//작업구분을 선택하세요",
+				"subject//제목을 입력하세요.",
+				"content//작업내용을 입력하세요",
+		};
+		for (String s : required) {
+			String[] param = s.split("//");
+			String value = params.get(param[0]);
+			if (value == null || value.trim().equals("")) {
+				throw new Exception(param[1]);
+			}
+		}
+		/** 유혀성 검사 E */
+		
 		int memNo = 0;
-		if(req.getAttribute("member") != null) {
-			Member member = (Member)req.getAttribute("member");
+		if (request.getAttribute("member") != null) {
+			Member member = (Member)request.getAttribute("member");
 			memNo = member.getMemNo();
 		}
 		
@@ -42,8 +58,23 @@ public class KanbanDAO {
 		bindings.add(DB.setBinding("String", params.get("subject")));
 		bindings.add(DB.setBinding("String", params.get("content")));
 		
-		int rs =DB.executeUpdate(sql, bindings);
-
-		return (rs > 0)?true:false;
+		int rs = DB.executeUpdate(sql, bindings);
+		
+		return (rs  > 0)?true:false;
+	}
+	
+	/**
+	 * 작업 목록 조회 
+	 * 
+	 * @param status
+	 * @return
+	 */
+	public ArrayList<Kanban> getList(String status) {
+		
+		return null;
+	}
+	
+	public ArrayList<Kanban> getList() {
+		return getList(null);
 	}
 }

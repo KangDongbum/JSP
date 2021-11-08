@@ -2,14 +2,13 @@
 <%
 	String rootURL = (String)request.getAttribute("rootURL");
 %>
-<script type="text/javacript" src="<%=rootURL%>/resources/js/form.js"></script>
 <form name="frmAdd" id="frmAdd" method ="post" action="../kanban/add" target="ifrmHidden" autocomplete="off" 
 enctype="multipart/form-data">
 <input type="hidden" name="gid" value="${gid}" />
 	<dl>
 		<dt>작업구분</dt>
 		<dd>
-			<input type="radio" name="status" value="ready" id="status_ready">
+			<input type="radio" name="status" value="ready" id="status_ready" checked>
 			<label for="status_ready">준비중</label>
 			
 			<input type="radio" name="status" value="progress" id="status_progress">
@@ -34,12 +33,11 @@ enctype="multipart/form-data">
 	<dl>
 		<dt>
 			파일첨부
+			<span class="del_file"><i class="xi-minus"></i>삭제</span>
 			<span class='add_file'><i class='xi-plus'></i>추가</span>
 		</dt>
 		<dd id='file_upload'>
 			<div class='rows'><input type="file" name="file1"></div>
-			<div class='rows'><input type="file" name="file2"></div>
-			<div class='rows'><input type="file" name="file3"></div>
 		</dd>
 	</dl>
 	<input type="submit" value="작업등록">

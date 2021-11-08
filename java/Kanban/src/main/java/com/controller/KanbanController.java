@@ -3,94 +3,96 @@ package com.controller;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.io.IOException;
+import java.io.*;
 
 import com.core.*;
 import com.models.kanban.*;
 
 /**
- * 		/kanban 컨트롤러
+ *   /kanban 컨트롤러
  *
  */
-public class KanbanController extends HttpServlet{
+public class KanbanController extends HttpServlet {
 	
-	private String httpMethod; // 요청 메소드
+	private String httpMethod; // 요청 메서드
+	private PrintWriter out;
 	
-	protected void doGet(HttpServletRequest req, HttpServletResponse res)
-		throws ServletException, IOException{
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String URI = req.getRequestURI();
-		String mode = URI.substring(URI.lastIndexOf("/") +1);
+		String URI = request.getRequestURI();
+		String mode = URI.substring(URI.lastIndexOf("/") + 1);
 		
-		httpMethod = req.getMethod().toUpperCase(); // GET, POST
+		httpMethod = request.getMethod().toUpperCase(); // GET, POST, DELETE
 		
-		if(httpMethod.equals("GET")) {
-			res.setContentType("text/html; charset=utf-8");
-		} else {
-			req.setCharacterEncoding("utf-8"); 
+		response.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
+		if (httpMethod.equals("GET")) {
+			response.setContentType("text/html; charset=utf-8");
 		}
-	
+		
+		out = response.getWriter();
 		switch(mode) {
-			case"work": //작업목록
-				workController(req,res);
+			case "work" : // 작업목록
+				workController(request, response);
 				break;
-			case"add": //작업등록
-				addController(req,res);
+			case "add" : // 작업 등록  
+				addController(request, response);
 				break;
-			case"edit": //작업수정
-				editController(req,res);
+			case "edit" : // 작업 수정
+				editController(request, response);
 				break;
-			case"remove": //작업 삭제
-				removeController(req,res);
+			case "remove" : // 작업 제거
+				removeController(request, response);
 				break;
-			default : // 없는 페이지
-				RequestDispatcher rd = req.getRequestDispatcher("/view/error/404.jsp");
-				rd.forward(req,res);
+			default : // 없는 페이지 
+				RequestDispatcher rd = request.getRequestDispatcher("/view/error/404.jsp");
+				rd.forward(request, response);
+				
 		}
 	}
 	
-	protected void doPost(HttpServletRequest req, HttpServletResponse res) 
-			throws ServletException, IOException{
-		doGet(req, res);
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 	
-	/** 작업 목록 **/
-	private void workController(HttpServletRequest req, HttpServletResponse res)
-		throws ServletException, IOException{
-		RequestDispatcher rd = req.getRequestDispatcher("/view/kanban/main.jsp");
-		rd.include(req, res);
+	/** 작업 목록 */
+	private void workController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		RequestDispatcher rd = request.getRequestDispatcher("/view/kanban/main.jsp");
+		rd.include(request, response);
 	}
 	
-	/** 작업 추가 **/
-	private void addController(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException{
-		if(httpMethod.equals("POST")) { //등록 처리
-			KanbanDAO dao  = KanbanDAO.getInstance();
-			dao.add(req);
+	/** 작업 등록 */
+	private void addController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		if (httpMethod.equals("POST")) { // 등록 처리 
+			try {
+				KanbanDAO dao = KanbanDAO.getInstance();
+				dao.add(request);
+			} catch (Exception e) {
+				out.printf("<script>alert('%s');</script>", e.getMessage());
+			}
 			
-		} else { //등록 양식
-			req.setAttribute("gid", System.currentTimeMillis());
+		} else { // 등록 양식
+			request.setAttribute("gid", System.currentTimeMillis());
 			
-			RequestDispatcher rd = req.getRequestDispatcher("/view/kanban/form.jsp");
-			rd.include(req, res);
-			
+			RequestDispatcher rd = request.getRequestDispatcher("/view/kanban/form.jsp");
+			rd.include(request, response);
 		}
 	}
 	
-	/** 작업 수정 **/
-	private void editController(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException{
-		if(httpMethod.equals("POST")) {//수정 처리
+	/** 작업 수정 */
+	private void editController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (httpMethod.equals("POST")) { // 수정 처리
 			
-		}else { //수정 양식
-			RequestDispatcher rd = req.getRequestDispatcher("/view/kanban/form.jsp");
-			rd.include(req, res);
+		} else { // 수정 양식 
+			RequestDispatcher rd = request.getRequestDispatcher("/view/kanban/form.jsp");
+			rd.include(request, response);
 		}
 	}
-	
-	/** 작업 삭제 **/
-	private void removeController(HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException{
-			
+
+	/** 작업 삭제 */
+	private void removeController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 	}
 }

@@ -5,10 +5,13 @@ import javax.servlet.http.*;
 
 import com.core.*;
 import com.models.member.*;
+import com.models.file.*;
 
 public class KanbanDAO {
 	
 	private static KanbanDAO instance = new KanbanDAO();
+	private ArrayList<FileInfo> attachFiles = null; // 첨부파일 목록
+	
 	private KanbanDAO() {};
 	
 	public static KanbanDAO getInstance() {
@@ -70,11 +73,100 @@ public class KanbanDAO {
 	 * @return
 	 */
 	public ArrayList<Kanban> getList(String status) {
+		ArrayList<DBField> bindings = new ArrayList<>();
+		String sql = "SELECT a.*, b.memId, b.memNm FROM worklist a LEFT JOIN member b  ON a.memNo = b.memNo";
+		if (status != null) {
+			sql += "WHERE a.status = ?";
+			bindings.add(DB.setBinding("String", status));
+		}
 		
-		return null;
+		sql += " ORDER BY a.regDt DESC";
+		
+		ArrayList<Kanban> list = DB.executeQuery(sql, bindings, new Kanban());
+		
+		return list;
 	}
 	
 	public ArrayList<Kanban> getList() {
 		return getList(null);
+	}
+	
+	/**
+	 * 작업 상세
+	 * 
+	 * @param idx 작업 등록번호
+	 * @return
+	 */
+	public Kanban get(int idx) {
+		
+		String sql = "SELECT a.*, b.memId, b.memNm FROM worklist a LEFT JOIN member b ON a.memNo = b.memNo WHERE a.idx=?";
+		ArrayList<DBField> bindings = new ArrayList<>();
+		bindings.add(DB.setBinding("Integer", String.valueOf(idx)));
+		Kanban data = DB.executeQueryOne(sql, bindings, new Kanban());
+		
+		/** 첨부 파일 S */
+		if(data != null) {
+			long gid = data.getGid();
+			attachFiles = FileUpload.getInstance().getFiles(gid);
+		}
+		/** 첨부 파일 E */
+		return data;
+	}
+	
+	public Kanban get(HttpServletRequest req) {
+		int idx = 0;
+		if(req.getParameter("idx") != null) {
+			idx = Integer.valueOf(req.getParameter("idx"));
+		}
+		return get(idx);
+	}
+	
+	/**
+	 * 작업 상세 첨부파일 목록
+	 * 
+	 * @return
+	 */
+	public ArrayList<FileInfo> getAttachFiles(){
+		
+		return attachFiles;
+	}
+	
+	/**
+	 * 작업 삭제
+	 * 
+	 * @param idx 작업 등록번호
+	 * @return
+	 */
+	public boolean delete(int idx) {
+		/**
+		 * 	0. 작업 정보
+		 *  1. 첨부 파일 삭제 - gid
+		 *  2. 작업 내용 삭제
+		 */
+		Kanban data = get(idx);
+		if(data == null) {
+			return false;
+		}
+		
+		FileUpload fileUpload = FileUpload.getInstance();
+		ArrayList<FileInfo> list = getAttachFiles();
+		for(FileInfo file : list) {
+			fileUpload.delete(file.getIdx());
+		}
+		
+		String sql = "DELETE FROM worklist WHERE idx = ?";
+		ArrayList<DBField> bindings = new ArrayList<>();
+		bindings.add(DB.setBinding("Integer", String.valueOf(idx)));
+		int rs = DB.executeUpdate(sql, bindings);
+		
+		return (rs > 0)?true:false;
+	}
+	
+	public boolean delete(HttpServletRequest req) {
+		int idx = 0;
+		if(req.getParameter("idx") != null) {
+			idx = Integer.valueOf(req.getParameter("idx"));
+		}
+		return delete(idx);
 	}
 }

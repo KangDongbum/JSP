@@ -48,8 +48,10 @@ public class DB {
 			StringBuilder sb = new StringBuilder();
 			sb.append("SQL : ");
 			sb.append(sql);
-			sb.append("/ Bingings : ");
-			sb.append(logBindings.toString());
+			if(logBindings != null) {
+				sb.append("/ Bingings : ");
+				sb.append(logBindings.toString());
+			}
 			Logger.log(sb, Logger.INFO);
 		}
 		
@@ -100,8 +102,10 @@ public class DB {
 				StringBuilder sb = new StringBuilder();
 				sb.append("SQL : ");
 				sb.append(sql);
-				sb.append("/ Bingings : ");
-				sb.append(logBindings.toString());
+				if(logBindings != null){
+					sb.append("/ Bingings : ");
+					sb.append(logBindings.toString());
+				}
 				sb.append(" / rs ");
 				sb.append(rs);
 				Logger.log(sb, Logger.INFO);
@@ -167,9 +171,11 @@ public class DB {
 		sb = new StringBuilder();
 		sb.append("SQL : ");
 		sb.append(sql);
-		sb.append("/ Bingings : ");
-		sb.append(logBindings.toString());
-		sb.append(" / count ");
+		if(logBindings != null) {
+			sb.append("/ Bingings : ");
+			sb.append(logBindings.toString());
+		}
+		sb.append(" / count : ");
 		sb.append(count);
 		Logger.log(sb, Logger.INFO);
 		

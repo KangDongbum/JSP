@@ -11,17 +11,17 @@ window.addEventListener("DOMContentLoaded", function() {
 		}, false);
 	}
 	
-	/** 작업 상세 보기*/
+	/** 작업 상세 보기 */
 	const showWorkList = document.querySelectorAll(".show_work");
-	if(showWorkList.length > 0){
-		showWorkList.forEach(function(showWork){
-			showWork.addEventListener("click",function(e){
+	if (showWorkList.length > 0) {
+		showWorkList.forEach(function(showWork) {
+			showWork.addEventListener("click", function(e) {
 				const el = e.target;
 				const idx = el.dataset.idx;
 				const url = "../kanban/view?idx=" + idx;
 				layer.popup(url, 500, 600, callbackWorkView);
-			}, false);
-		});	
+			});
+		});
 	}
 	
 }, false);
@@ -41,6 +41,9 @@ function callbackAddPopup()
 			delFileForm();
 		}, false);
 	}
+	
+	/** 파일 삭제 처리(수정) */
+	callbackWorkView();
 }
 
 /** 파일 첨부 추가 */
@@ -51,6 +54,7 @@ function addFileForm() {
 		const addRows = file.cloneNode(true);
 		const cnt = fileUpload.childElementCount + 1;
 		addRows.firstElementChild.name = "file" + cnt;
+		addRows.firstElementChild.value = "";
 		
 		fileUpload.appendChild(addRows);
 	}
@@ -75,6 +79,7 @@ function callbackWorkView() {
 			if (!confirm('정말 삭제하시겠습니까?')) {
 				return;
 			}
+			
 			const target = e.target.parentElement;
 			const idx = target.dataset.idx;
 			axios({
@@ -94,11 +99,11 @@ function callbackWorkView() {
 	
 	/** 작업 수정 */
 	const updateWork = document.querySelector(".update_work");
-	if(updateWork){
-		updateWork.addEventListener("click", function(){
+	if (updateWork) {
+		updateWork.addEventListener("click", function(e) {
 			const idx = e.target.dataset.idx;
-			const url = '../kanban/edit?idx=' + idx;
+			const url = "../kanban/edit?idx=" + idx;
 			layer.popup(url, 500, 600, callbackAddPopup);
 		}, false);
-	}
+	}	
 }

@@ -21,7 +21,7 @@
 	<dl>
 		<dt>제목</dt>
 		<dd>
-			${data.status}
+			${data.subject}
 		</dd>
 	</dl>
 	<dl>

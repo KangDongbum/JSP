@@ -10,6 +10,7 @@ import org.mindrot.jbcrypt.*;
 import com.core.DB;
 import com.core.DBField;
 import com.core.Logger;
+import com.core.Request;
 import com.models.snslogin.*;
 
 /**
@@ -35,12 +36,11 @@ public class MemberDao {
 	 * 
 	 * @param request
 	 */
-	public static void init(ServletRequest request) {
-		if (request instanceof HttpServletRequest) {
+	public static void init() {
 			MemberDao dao = getInstance();
-			HttpServletRequest req = (HttpServletRequest)request;
+			HttpServletRequest request = Request.get();
 			
-			HttpSession session = req.getSession();
+			HttpSession session = request.getSession();
 			int memNo = 0;
 			Member member = null;
 			if (session.getAttribute("memNo") != null) {
@@ -57,10 +57,9 @@ public class MemberDao {
 			
 			/** 소셜 프로필 유지 처리 */
 			if(socialMember == null) {
-				socialMember = SocialLogin.getSocialMember(req);
+				socialMember = SocialLogin.getSocialMember();
 			}
 		} // endif 
-	}
 	
 	/**
 	 * 로그인 여부 체크 
@@ -68,7 +67,8 @@ public class MemberDao {
 	 * @param request
 	 * @return
 	 */
-	public static boolean isLogin(ServletRequest request) {
+	public static boolean isLogin() {
+		HttpServletRequest request = Request.get();
 		boolean isLogin = false;
 		if (request.getAttribute("isLogin") != null) {
 			isLogin = (Boolean)request.getAttribute("isLogin");
@@ -124,8 +124,8 @@ public class MemberDao {
 		
 		int rs  = DB.executeUpdate(sql, bindings);
 		if(rs > 0 && socialMember != null){ //소셜 로그인 성공 -> 로그인 처리
-			SocialLogin sociallogin = SocialLogin.getSocialInstance(request);
-			sociallogin.login(request);
+			SocialLogin sociallogin = SocialLogin.getSocialInstance();
+			sociallogin.login();
 		}
 		return (rs > 0)?true:false;
 	}

@@ -168,7 +168,7 @@ public class Logger {
 	 * 
 	 * @param request
 	 */
-	public static void log(ServletRequest request) {
+	public static void log() {
 		/**
 		 * 1. 요청 메서드(O)
 		 * 2. 요청 URL(O)
@@ -177,8 +177,7 @@ public class Logger {
 		 * 5. User Agent -> 요청 헤더 (O)
 		 * 6. Accept-Language -> 사용 언어 (O) 
 		 */
-		if (request instanceof HttpServletRequest) {
-			HttpServletRequest req = (HttpServletRequest)request;
+			HttpServletRequest req = Request.get();
 			StringBuilder sb = new StringBuilder();
 			
 			String method = req.getMethod();
@@ -203,7 +202,6 @@ public class Logger {
 			
 			log(sb, Logger.INFO);
 		} // if
-	}
 	
 	/**
 	 * 예외, 에러에대한 로그 기록 

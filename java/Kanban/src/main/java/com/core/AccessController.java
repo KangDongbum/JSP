@@ -26,12 +26,11 @@ public class AccessController {
 	 * 페이지별 접속 체크
 	 * @param req
 	 */
-	public static void init(ServletRequest req, ServletResponse res) throws IOException {
-		try{
-			if(req instanceof HttpServletRequest) {
-				HttpServletRequest req2 = (HttpServletRequest)req;
-				requestURI = req2.getRequestURI();
-				isLogin = MemberDao.isLogin(req);
+	public static void init() throws Exception {
+		HttpServletRequest req = Request.get();
+		HttpServletResponse res = Response.get();
+				requestURI = req.getRequestURI();
+				isLogin = MemberDao.isLogin();
 				AccessController.response = res;
 				rootURL = (String)req.getAttribute("rootURL");
 				
@@ -43,15 +42,7 @@ public class AccessController {
 				
 				// 회원 전용 URI 체크
 				checkMemberOnly();
-			} 
-		}catch(Exception e) {
-			Logger.log(e);
-			
-			res.setContentType("text/html; charset=utf-8");
-			PrintWriter out = res.getWriter();
-			out.printf("<script>alert('%s');history.back();</script>",e.getMessage());
 		}
-	}
 	
 	/**
 	 * 비회원 전용 URI 체크
@@ -65,7 +56,7 @@ public class AccessController {
 		
 		if(isLogin) {
 			for(String URI : guestOnlyURI) {
-				if(requestURI.indexOf(URI) != -1) { // 비회원 전용 페이지 접근한 경우
+				if(requestURI.indexOf(URI) != -1 && requestURI.indexOf("/resources") == -1) { // 비회원 전용 페이지 접근한 경우
 					throw new Exception("접근권한이 없습니다.");
 				}
 			}
@@ -94,7 +85,7 @@ public class AccessController {
 		/** 로그인 하지 않았을때 접속 하면 X */
 		if(!isLogin) {
 			for(String URI : memberOnlyURI) {
-				if(requestURI.indexOf(URI) != -1) { // 비회원이 회원전용 URI에 접속
+				if(requestURI.indexOf(URI) != -1 && requestURI.indexOf("/resources") == -1) { // 비회원이 회원전용 URI에 접속
 					throw new Exception("회원 전용 페이지 입니다.");
 				}
 			}

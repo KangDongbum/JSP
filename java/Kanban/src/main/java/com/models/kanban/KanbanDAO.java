@@ -21,13 +21,11 @@ public class KanbanDAO {
 			instance = new KanbanDAO();
 		}
 		
-		return instance;
-	}
-	
-	public static void init(ServletRequest request) {
-		if (request instanceof HttpServletRequest) {
-			KanbanDAO.request = (HttpServletRequest)request;
+		if(request == null) {
+			request = Request.get();
 		}
+		
+		return instance;
 	}
 	
 	/**
@@ -36,9 +34,9 @@ public class KanbanDAO {
 	 * @param request
 	 * @return
 	 */
-	public boolean add(HttpServletRequest request) throws Exception {
+	public boolean add() throws Exception {
 	
-		HashMap<String, String> params = FileUpload.getInstance().upload(request).get();
+		HashMap<String, String> params = FileUpload.getInstance().upload().get();
 		
 		/** 유효성 검사 S */
 		checkWorkData(params);
@@ -70,9 +68,9 @@ public class KanbanDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean edit(HttpServletRequest request) throws Exception {
+	public boolean edit() throws Exception {
 		
-		HashMap<String, String> params = FileUpload.getInstance().upload(request).get();
+		HashMap<String, String> params = FileUpload.getInstance().upload().get();
 				
 		/** 유효성 검사 S */
 		if (params.get("idx") == null) {
@@ -175,7 +173,7 @@ public class KanbanDAO {
 		return data;
 	}
 	
-	public Kanban get(HttpServletRequest request) {
+	public Kanban get() {
 		int idx = 0;
 		if (request.getParameter("idx") != null) {
 			idx = Integer.valueOf(request.getParameter("idx"));
@@ -223,7 +221,7 @@ public class KanbanDAO {
 		return (rs > 0)?true:false;
 	}
 	
-	public boolean delete(HttpServletRequest request) {
+	public boolean delete() {
 		int idx = 0;
 		if (request.getParameter("idx") != null) {
 			idx = Integer.valueOf(request.getParameter("idx"));

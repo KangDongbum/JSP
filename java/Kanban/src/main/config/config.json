@@ -7,20 +7,20 @@
 		"user" : "kanban", 
 		"password" : "123456"
 	},
-	"LogDir" : "D:\\logs",
+	"LogDir" : "C:\\logs",
 	"css": {
 		"/kanban" : "kanban"
 	},
-	"js":{
+	"js" : {
 		"/kanban" : "kanban"
 	},
-	"AddonHeader":{
+	"AddonHeader" : {
 		"*" : "common"
 	},
-	"AddonFooter" :{
+	"AddonFooter" : {
 		"*" : "common"
- 	},
- 	"NaverLogin" :{
+	},
+	"NaverLogin" :{
  		"clientId" : "mtXmzjI32ewacb6qC9aQ",
  		"secret" : "IBJ43OIb4i",
  		"callbackURL" : "http://localhost:8080/Kanban/member/naver_login"

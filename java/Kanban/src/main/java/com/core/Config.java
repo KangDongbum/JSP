@@ -78,6 +78,7 @@ public class Config {
 	public static void init(ServletRequest request) {
 		if (request instanceof HttpServletRequest) {
 			Config.request = (HttpServletRequest)request;
+			Config.requestURI = Config.request.getRequestURI();
 		}
 	}
 	/**
